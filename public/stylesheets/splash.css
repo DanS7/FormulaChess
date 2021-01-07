@@ -1,0 +1,50 @@
+* {
+    background-color: #b3d4fc;
+    padding: 0;
+    border: 0;
+    margin: 0;
+}
+
+#logoImg {
+    display: block;
+    margin: 0 auto;
+    padding-bottom: 50px;
+    width: 25%;
+}
+
+table {
+    width: 100%;
+    padding: 20px;
+}
+
+td {
+    width: 33.3%;
+    //border: 2px dashed;
+}
+
+#gameStats, #gameDescription {
+    border: 2px solid black;
+    background-color: #153973;
+    color: white;
+    width: 50%;
+    height: 150px;
+    margin: auto;
+    text-align: center;
+}
+
+#btnContainer {
+    text-align: center;
+    height: 100px;
+}
+
+#playBtn {
+    background-color: #3a4b6e;
+    margin: 0;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+}
