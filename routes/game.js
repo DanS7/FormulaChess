@@ -11,18 +11,22 @@ function createBoard() {
     var container = document.getElementById("board");
 
     for(let i = 0; i < 8; i++) {
-        var row = createRow();
+        var row = createRow(i);
         container.appendChild(row);
     }
 }
 
-function createRow() {
+function createRow(rownum) {
     var row = document.createElement('div');
     row.id = 'row';
     for(let i = 0; i < 8; i++) {
         var testChild = document.createElement('div');
-        testChild.id = 'square';
-        testChild.innerHTML = i;
+        if((rownum + i) % 2 === 0) {
+            testChild.id = 'white';
+        }
+        else {
+            testChild.id = 'black';
+        }
         row.appendChild(testChild);
     }
     return row;
