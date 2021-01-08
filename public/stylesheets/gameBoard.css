@@ -126,11 +126,14 @@ body {
 #white, #black {
   display: block;
   float: left;
-  border: 1px black solid;
   width: 12%;
   height: 100%;
 }
 
 #black {
   background-color: black;
+}
+
+#white {
+  background-color: white;
 }
