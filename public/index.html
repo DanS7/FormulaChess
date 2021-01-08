@@ -5,23 +5,32 @@
   <meta charset="utf-8">
   <title>GameScreen</title>
   <link rel="stylesheet" href="stylesheets/gameBoard.css">
-
 </head>
 
 <body>
 
 <!-- Add your site or application content here -->
-<div class="leftSide">
+<div class="leftContainer">
   <img src="images/logo_transparent.png" id="logoImg">
   <div class="opponentCaptures">
   </div>
   <div class="userCaptures">
   </div>
 </div>
-
-<div class="timers">
-
+<div class="centerContainer">
+  <div class="timers">
+    <div class="leftTimer">Opponent's timer</div>
+    <div class="rightTimer">Your timer</div>
+  </div>
+  <!--Here comes the game board, one div for each board cell -->
+  <div class="board"></div>
+</div>
+<div  class="rightContainer">
+  <div class="concedeContainer">
+    <button id="concedeButton">Concede</button>
+  </div>
+  <!-- Here we need to add move logs and who's turn it is but maybe later -->
 </div>
 </body>
-
+<script src="../routes/game.js"></script>
 </html>
