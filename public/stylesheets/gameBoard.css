@@ -123,17 +123,21 @@ body {
   height: 12.5%;
 }
 
-#white, #black {
+.white, .black {
   display: block;
   float: left;
   width: 12.5%;
   height: 100%;
 }
 
-#black {
+.black {
   background-color: #60778a;
 }
 
-#white {
+.white {
   background-color: #ffad94;
+}
+
+#pawn {
+  background-image: url("../images/Black Pieces/Pawn_Black.png");
 }

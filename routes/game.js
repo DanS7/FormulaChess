@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 });
 
+document.addEventListener('DOMContentLoaded', createBoard);
+document.addEventListener('DOMContentLoaded', generatePieces);
+
 //Creating the chess board
 function createBoard() {
     var container = document.getElementById("board");
@@ -22,14 +25,30 @@ function createRow(rownum) {
     for(let i = 0; i < 8; i++) {
         var testChild = document.createElement('div');
         if((rownum + i) % 2 === 0) {
-            testChild.id = 'white';
+            testChild.className = 'white';
         }
         else {
-            testChild.id = 'black';
+            testChild.className = 'black';
         }
+        testChild.id = position(rownum, i);
         row.appendChild(testChild);
     }
     return row;
 }
 
-document.addEventListener('DOMContentLoaded', createBoard);
+function position(rownum, colnum) {
+    var x, y;
+    x = 8 - rownum;
+    y = String.fromCharCode(97 + colnum);
+    return y.concat(x);
+}
+
+function generatePieces() {
+    for(let i = 0; i < 8; i++) {
+        var pawn = document.createElement('div');
+        pawn.id = 'pawn';
+        var pos = String.fromCharCode(97 + i);
+        document.getElementById(pos.concat('7')).appendChild(pawn);
+        console.log(pawn + "i = " + i);
+    }
+}
