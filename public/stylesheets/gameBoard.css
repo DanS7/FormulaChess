@@ -139,5 +139,6 @@ body {
 }
 
 #pawn {
-  background-image: url("../images/Black Pieces/Pawn_Black.png");
+  height: 100%;
+  width: 100%;
 }

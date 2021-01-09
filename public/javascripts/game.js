@@ -44,11 +44,23 @@ function position(rownum, colnum) {
 }
 
 function generatePieces() {
+    //Spawning pawns | Black and White
     for(let i = 0; i < 8; i++) {
-        var pawn = document.createElement('div');
-        pawn.id = 'pawn';
-        var pos = String.fromCharCode(97 + i);
-        document.getElementById(pos.concat('7')).appendChild(pawn);
-        console.log(pawn + "i = " + i);
+        var pawn_black = document.createElement('img');
+        pawn_black.id = 'pawn';
+        pawn_black.src = 'images/Black Pieces/Pawn_Black.png';
+        var pos_black = String.fromCharCode(97 + i);
+        document.getElementById(pos_black.concat('7')).appendChild(pawn_black);
+        //console.log('pawn_black ' + "i = " + i);
+
+        var pawn_white = document.createElement('img');
+        pawn_white.id = 'pawn';
+        pawn_white.src = 'images/White_Pieces/Pawn.png';
+        var pos_white = String.fromCharCode(97 + i);
+        document.getElementById(pos_white.concat('2')).appendChild(pawn_white);
+        //console.log('pawn_white ' + "i = " + i);
     }
+
+    //Spawning Rooks
+
 }
