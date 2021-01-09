@@ -61,6 +61,15 @@ function generatePieces() {
         //console.log('pawn_white ' + "i = " + i);
     }
 
-    //Spawning Rooks
+    //Spawning back row
+    for(let i = 0; i < 8; i++) {
+        var pos = String.fromCharCode(97 + i);
+        var pos_black = pos.concat('8');
+        var pos_white = pos.concat('1');
+
+        switch(pos) {
+
+        }
+    }
 
 }
