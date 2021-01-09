@@ -47,6 +47,7 @@ function generatePieces() {
     //Spawning pawns | Black and White
     for(let i = 0; i < 8; i++) {
         var pawn_black = document.createElement('img');
+        pawn_black.className = 'chessPiece';
         pawn_black.id = 'pawn';
         pawn_black.src = 'images/Black Pieces/Pawn_Black.png';
         var pos_black = String.fromCharCode(97 + i);
@@ -54,6 +55,7 @@ function generatePieces() {
         //console.log('pawn_black ' + "i = " + i);
 
         var pawn_white = document.createElement('img');
+        pawn_white.className = 'chessPiece';
         pawn_white.id = 'pawn';
         pawn_white.src = 'images/White_Pieces/Pawn.png';
         var pos_white = String.fromCharCode(97 + i);
@@ -67,9 +69,60 @@ function generatePieces() {
         var pos_black = pos.concat('8');
         var pos_white = pos.concat('1');
 
-        switch(pos) {
+        var white_piece = document.createElement('img');
+        var black_piece = document.createElement('img');
 
+        white_piece.className = 'chessPiece';
+        black_piece.className = 'chessPiece';
+
+        switch(pos) {
+            //Rook
+            case('a'):
+            case('h'):
+                white_piece.src = 'images/White_Pieces/Rook.png';
+                white_piece.id = 'rook';
+
+                black_piece.src = 'images/Black Pieces/Rook_Black.png';
+                black_piece.id = 'rook';
+                break;
+            //Knight
+            case('b'):
+            case('g'):
+                white_piece.src = 'images/White_Pieces/Knight.png';
+                white_piece.id = 'knight';
+
+                black_piece.src = 'images/Black Pieces/Knight_Black.png';
+                black_piece.id = 'knight';
+                break;
+            //Bishop
+            case('c'):
+            case('f'):
+                white_piece.src = 'images/White_Pieces/Bishop.png';
+                white_piece.id = 'bishop';
+
+                black_piece.src = 'images/Black Pieces/Bishop_Black.png';
+                black_piece.id = 'bishop';
+                break;
+            //Queen
+            case('d'):
+                white_piece.src = 'images/White_Pieces/Queen.png';
+                white_piece.id = 'queen';
+
+                black_piece.src = 'images/Black Pieces/Queen_Black.png';
+                black_piece.id = 'queen';
+                break;
+            //King
+            case('e'):
+                white_piece.src = 'images/White_Pieces/King.png';
+                white_piece.id = 'king';
+
+                black_piece.src = 'images/Black Pieces/King_Black.png';
+                black_piece.id = 'king';
+                break;
         }
+
+        document.getElementById(pos_black).appendChild(black_piece);
+        document.getElementById(pos_white).appendChild(white_piece);
     }
 
 }

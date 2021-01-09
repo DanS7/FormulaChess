@@ -138,7 +138,8 @@ body {
   background-color: #ffad94;
 }
 
-#pawn {
+.chessPiece {
   height: 100%;
   width: 100%;
+  cursor: pointer;
 }
