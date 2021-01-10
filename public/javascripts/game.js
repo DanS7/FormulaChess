@@ -145,7 +145,7 @@ function createPosition(posX, posY, offsetX, offsetY) {
 }
 
 function makeCircle(parent) {
-    var circle = document.createElement('img');
+    let circle = document.createElement('img');
     circle.src = 'images/circle.png';
     circle.id = 'circle';
     circle.className = parent;
@@ -153,13 +153,23 @@ function makeCircle(parent) {
     return circle;
 }
 
+function spawnCircle(spawnPos, parentPos) {
+    if(document.getElementById(spawnPos) != null && !document.getElementById(spawnPos).hasChildNodes()) {
+        document.getElementById(spawnPos).appendChild(makeCircle(parentPos));
+        return true;
+    }
+    return false;
+}
+
 function checkIfCircle() {
-    var temp = document.getElementById('circle');
+    let temp = document.getElementById('circle');
     while(temp != null) {
         temp.parentNode.removeChild(temp);
         temp = document.getElementById('circle');
     }
 }
+
+
 
 function handleMove() {
     checkIfCircle();
@@ -172,7 +182,7 @@ function handleMove() {
             showPawnMoves(color, posX, posY);
             break;
         case('rook'):
-            //TODO
+            showRookMoves(color, posX, posY);
             break;
         case('knight'):
             showKnightMoves(color, posX, posY);
@@ -184,25 +194,24 @@ function handleMove() {
             //TODO
             break;
         case('queen'):
-            //TODO
+            showQueenMoves(color, posX, posY);
             break;
 
     }
 }
 
 function showPawnMoves(color, posX, posY) {
+    let thisPos = createPosition(posX, posY, 0, 0);
     if(color === 'whiteChessPiece') {
         //We need to look above
         const nextPos = createPosition(posX, parseInt(posY) , 0, 1);
         if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
-            document.getElementById(nextPos).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
+            spawnCircle(nextPos, thisPos);
             //Check if in start position
             if(parseInt(posY) === 2) {
                 //In star position so we can move 2 spaces up
                 const extraPos = createPosition(posX, parseInt(posY), 0, 2);
-                if (document.getElementById(extraPos) != null && !document.getElementById(extraPos).hasChildNodes()) {
-                    document.getElementById(extraPos).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
-                }
+                spawnCircle(extraPos, thisPos);
             }
         }
     }
@@ -211,14 +220,12 @@ function showPawnMoves(color, posX, posY) {
         //We look below
         const nextPos = createPosition(posX, parseInt(posY) , 0, -1);
         if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
-            document.getElementById(nextPos).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
+            spawnCircle(nextPos, thisPos);
             //Check if in start position
             if(parseInt(posY) === 7) {
                 //In star position so we can move 2 spaces up
                 const extraPos = createPosition(posX, parseInt(posY), 0, -2);
-                if (document.getElementById(extraPos) != null && !document.getElementById(extraPos).hasChildNodes()) {
-                    document.getElementById(extraPos).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
-                }
+                spawnCircle(extraPos, thisPos);
             }
         }
     }
@@ -227,16 +234,13 @@ function showPawnMoves(color, posX, posY) {
 function showKnightMoves(color, posX, posY) {
     let movesX = [-1, 1];
     let movesY = [-2, 2];
+    let thisPos = createPosition(posX, posY, 0, 0);
     for(let i = 0; i < movesX.length; i++) {
         for(let j = 0; j < movesX.length; j++) {
             let pos1 = createPosition(posX, parseInt(posY), movesX[i], movesY[j]);
             let pos2 = createPosition(posX, parseInt(posY), movesY[i], movesX[j]);
-            if (document.getElementById(pos1) != null && !document.getElementById(pos1).hasChildNodes()) {
-                document.getElementById(pos1).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
-            }
-            if (document.getElementById(pos2) != null && !document.getElementById(pos2).hasChildNodes()) {
-                document.getElementById(pos2).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
-            }
+            spawnCircle(pos1, thisPos);
+            spawnCircle(pos2, thisPos);
         }
     }
 }
@@ -244,16 +248,14 @@ function showKnightMoves(color, posX, posY) {
 function showBishopMoves(color, posX, posY) {
     //-1 -1 | -1 1 | 1 -1 | 1 1
     let moves = [-1, 1];
-    let newPos = createPosition(posX, posY);
+    let thisPos = createPosition(posX, posY, 0, 0);
     for(let i = 0; i < 2; i++) {
         for(let j = 0; j < 2; j++) {
             let k = 1;
+            let newPos;
             do {
                 newPos = createPosition(posX, posY, k * moves[i], k * moves[j]);
-                if(document.getElementById(newPos) != null && !document.getElementById(newPos).hasChildNodes()) {
-                    document.getElementById(newPos).appendChild(makeCircle(createPosition(posX, posY, 0, 0)));
-                }
-                else {
+                if(!spawnCircle(newPos, thisPos)) {
                     break;
                 }
                 k++;
@@ -262,10 +264,39 @@ function showBishopMoves(color, posX, posY) {
     }
 }
 
+function showRookMoves(color, posX, posY) {
+    let thisPos = createPosition(posX, posY, 0, 0);
+    let moves = [-1, 1];
+    for(let i = 0; i < moves.length; i++) {
+        let newPos;
+        let k = 1;
+        do {
+            newPos = createPosition(posX, posY, k * moves[i], 0);
+            if(!spawnCircle(newPos, thisPos)) {
+                break;
+            }
+            console.log("something!");
+            k++;
+        } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
+        k = 1;
+        do {
+            newPos = createPosition(posX, posY, 0, k * moves[i]);
+            if(!spawnCircle(newPos, thisPos)) {
+                break;
+            }
+            k++;
+        } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
+    }
+}
+
+function showQueenMoves(color, posX, posY) {
+    showRookMoves(color, posX, posY);
+    showBishopMoves(color, posX, posY);
+}
 
 //---------//
 function makeMove() {
-    obj = document.getElementById(this.className).childNodes.item(0);
+    let obj = document.getElementById(this.className).childNodes.item(0);
     document.getElementById(this.className).removeChild(obj);
     this.parentElement.appendChild(obj);
     checkIfCircle();
