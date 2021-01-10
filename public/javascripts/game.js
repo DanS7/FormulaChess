@@ -47,17 +47,15 @@ function generatePieces() {
     //Spawning pawns | Black and White
     for(let i = 0; i < 8; i++) {
         var pawn_black = document.createElement('img');
-        pawn_black.className = 'chessPiece';
-        pawn_black.id = 'pawn';
+        pawn_black.className = 'chessPiece wp';
         pawn_black.src = 'images/Black Pieces/Pawn_Black.png';
         var pos_black = String.fromCharCode(97 + i);
         document.getElementById(pos_black.concat('7')).appendChild(pawn_black);
         //console.log('pawn_black ' + "i = " + i);
 
         var pawn_white = document.createElement('img');
-        pawn_white.className = 'chessPiece';
-        pawn_white.id = 'pawn';
-        pawn_white.src = 'images/White_Pieces/Pawn.png';
+        pawn_white.className = 'chessPiece bp';
+        pawn_white.src = 'images/White Pieces/Pawn_White.png';
         var pos_white = String.fromCharCode(97 + i);
         document.getElementById(pos_white.concat('2')).appendChild(pawn_white);
         //console.log('pawn_white ' + "i = " + i);
@@ -76,53 +74,53 @@ function generatePieces() {
         black_piece.className = 'chessPiece';
 
         switch(pos) {
-            //Rook
+            //Rook = r
             case('a'):
             case('h'):
-                white_piece.src = 'images/White_Pieces/Rook.png';
-                white_piece.id = 'rook';
+                white_piece.src = 'images/White Pieces/Rook_White.png';
+                white_piece.className += ' wr';
 
                 black_piece.src = 'images/Black Pieces/Rook_Black.png';
-                black_piece.id = 'rook';
+                black_piece.className+= ' br';
                 break;
-            //Knight
+            //Knight = kn
             case('b'):
             case('g'):
-                white_piece.src = 'images/White_Pieces/Knight.png';
-                white_piece.id = 'knight';
+                white_piece.src = 'images/White Pieces/Knight_White.png';
+                white_piece.className += ' wkn';
 
                 black_piece.src = 'images/Black Pieces/Knight_Black.png';
-                black_piece.id = 'knight';
+                black_piece.className += ' bkn';
                 break;
-            //Bishop
+            //Bishop = b
             case('c'):
             case('f'):
-                white_piece.src = 'images/White_Pieces/Bishop.png';
-                white_piece.id = 'bishop';
+                white_piece.src = 'images/White Pieces/Bishop_White.png';
+                white_piece.className += ' wb';
 
                 black_piece.src = 'images/Black Pieces/Bishop_Black.png';
-                black_piece.id = 'bishop';
+                black_piece.className += ' bb';
                 break;
-            //Queen
+            //Queen = q
             case('d'):
-                white_piece.src = 'images/White_Pieces/Queen.png';
-                white_piece.id = 'queen';
+                white_piece.src = 'images/White Pieces/Queen_White.png';
+                white_piece.className += ' wq';
 
                 black_piece.src = 'images/Black Pieces/Queen_Black.png';
-                black_piece.id = 'queen';
+                black_piece.className += ' bq';
                 break;
-            //King
+            //King = k
             case('e'):
-                white_piece.src = 'images/White_Pieces/King.png';
-                white_piece.id = 'king';
+                white_piece.src = 'images/White Pieces/King_White.png';
+                white_piece.className += ' wk';
 
                 black_piece.src = 'images/Black Pieces/King_Black.png';
-                black_piece.id = 'king';
+                black_piece.className += ' bk';
                 break;
         }
 
         document.getElementById(pos_black).appendChild(black_piece);
         document.getElementById(pos_white).appendChild(white_piece);
     }
-
 }
+

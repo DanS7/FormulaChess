@@ -1,0 +1,3 @@
+TODO
+All images need to be modified in PS and resized such that
+the pieces are exactly in the middle and can be resized correctly with css

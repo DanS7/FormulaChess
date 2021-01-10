@@ -1,0 +1,3 @@
+TODO
+All current white pieces will be later deleted.
+Create more polished ones by recoloring the black ones.
