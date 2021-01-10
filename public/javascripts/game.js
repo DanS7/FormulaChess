@@ -55,7 +55,7 @@ function generatePieces() {
         var pawn_white = document.createElement('img');
         pawn_white.className = 'whiteChessPiece';
         pawn_white.id = 'pawn';
-        pawn_white.src = 'images/White_Pieces/Pawn.png';
+        pawn_white.src = 'images/White Pieces/Pawn_White.png';
         pawn_white.addEventListener('click', handleMove);
         var pos_white = String.fromCharCode(97 + i);
 
@@ -83,7 +83,7 @@ function generatePieces() {
             //Rook
             case('a'):
             case('h'):
-                white_piece.src = 'images/White_Pieces/Rook.png';
+                white_piece.src = 'images/White Pieces/Rook_White.png';
                 white_piece.id = 'rook';
 
                 black_piece.src = 'images/Black Pieces/Rook_Black.png';
@@ -92,7 +92,7 @@ function generatePieces() {
             //Knight
             case('b'):
             case('g'):
-                white_piece.src = 'images/White_Pieces/Knight.png';
+                white_piece.src = 'images/White Pieces/Knight_White.png';
                 white_piece.id = 'knight';
 
                 black_piece.src = 'images/Black Pieces/Knight_Black.png';
@@ -101,7 +101,7 @@ function generatePieces() {
             //Bishop
             case('c'):
             case('f'):
-                white_piece.src = 'images/White_Pieces/Bishop.png';
+                white_piece.src = 'images/White Pieces/Bishop_White.png';
                 white_piece.id = 'bishop';
 
                 black_piece.src = 'images/Black Pieces/Bishop_Black.png';
@@ -109,7 +109,7 @@ function generatePieces() {
                 break;
             //Queen
             case('d'):
-                white_piece.src = 'images/White_Pieces/Queen.png';
+                white_piece.src = 'images/White Pieces/Queen_White.png';
                 white_piece.id = 'queen';
 
                 black_piece.src = 'images/Black Pieces/Queen_Black.png';
@@ -117,7 +117,7 @@ function generatePieces() {
                 break;
             //King
             case('e'):
-                white_piece.src = 'images/White_Pieces/King.png';
+                white_piece.src = 'images/White Pieces/King_White.png';
                 white_piece.id = 'king';
 
                 black_piece.src = 'images/Black Pieces/King_Black.png';
