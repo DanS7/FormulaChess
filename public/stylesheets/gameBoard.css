@@ -146,6 +146,14 @@ body {
   cursor: pointer;
 }
 
+.whiteChessPieceAttacked, .blackChessPieceAttacked {
+  padding-top: 5%;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  background-color: red;
+}
+
 #circle {
   margin: auto;
   height: 30%;

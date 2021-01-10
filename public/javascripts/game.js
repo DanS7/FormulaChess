@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', createBoard);
 document.addEventListener('DOMContentLoaded', generatePieces);
 
+var currentlyAttacked = [];
+
 //-----------Creating the chess board-------------//
 function createBoard() {
     var container = document.getElementById("board");
@@ -154,9 +156,24 @@ function makeCircle(parent) {
 }
 
 function spawnCircle(spawnPos, parentPos) {
-    if(document.getElementById(spawnPos) != null && !document.getElementById(spawnPos).hasChildNodes()) {
-        document.getElementById(spawnPos).appendChild(makeCircle(parentPos));
-        return true;
+    let parent = document.getElementById(parentPos).childNodes[0];
+    //console.log(parent);
+    if(document.getElementById(spawnPos) != null) {
+        if(!document.getElementById(spawnPos).hasChildNodes()) {
+            document.getElementById(spawnPos).appendChild(makeCircle(parentPos));
+            return true;
+        }
+        else {
+            //console.log(document.getElementById(spawnPos));
+            let attackedPiece = document.getElementById(spawnPos).childNodes[0];
+            if(attackedPiece.className !== parent.className) {
+                console.log("Can attack piece at " + spawnPos);
+                if(!document.getElementById(spawnPos).childNodes[0].className.includes('Attacked')) {
+                    document.getElementById(spawnPos).childNodes[0].className += 'Attacked' + parentPos.toString();
+                    currentlyAttacked[++currentlyAttacked.length] = document.getElementById(spawnPos).childNodes[0];
+                }
+            }
+        }
     }
     return false;
 }
@@ -167,6 +184,19 @@ function checkIfCircle() {
         temp.parentNode.removeChild(temp);
         temp = document.getElementById('circle');
     }
+
+    for(let i = 0; i < currentlyAttacked.length; i++) {
+        if(typeof currentlyAttacked[i] != "undefined") {
+            if (currentlyAttacked[i].className.includes('white')) {
+                currentlyAttacked[i].className = 'whiteChessPiece';
+            } else if (currentlyAttacked[i].className.includes('black')) {
+                currentlyAttacked[i].className = 'blackChessPiece';
+            }
+            console.log(currentlyAttacked[i]);
+            currentlyAttacked[i] = null;
+        }
+    }
+    currentlyAttacked = [];
 }
 
 
@@ -191,7 +221,7 @@ function handleMove() {
             showBishopMoves(color, posX, posY);
             break;
         case('king'):
-            //TODO
+            showKingMoves(color, posX, posY);
             break;
         case('queen'):
             showQueenMoves(color, posX, posY);
@@ -292,6 +322,17 @@ function showRookMoves(color, posX, posY) {
 function showQueenMoves(color, posX, posY) {
     showRookMoves(color, posX, posY);
     showBishopMoves(color, posX, posY);
+}
+
+function showKingMoves(color, posX, posY) {
+    let thisPos = createPosition(posX, posY, 0, 0);
+    let moves = [-1, 0, 1];
+    for(let i = 0; i < moves.length; i++) {
+        for(let j = 0; j < moves.length; j++) {
+            let newPos = createPosition(posX, posY, moves[i], moves[j]);
+            spawnCircle(newPos, thisPos);
+        }
+    }
 }
 
 //---------//
