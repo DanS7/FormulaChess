@@ -169,7 +169,7 @@ function spawnCircle(spawnPos, parentPos) {
             if(attackedPiece.className !== parent.className) {
                 console.log("Can attack piece at " + spawnPos);
                 if(!document.getElementById(spawnPos).childNodes[0].className.includes('Attacked')) {
-                    document.getElementById(spawnPos).childNodes[0].className += 'Attacked' + parentPos.toString();
+                    document.getElementById(spawnPos).childNodes[0].className += 'Attacked';
                     currentlyAttacked[++currentlyAttacked.length] = document.getElementById(spawnPos).childNodes[0];
                 }
             }
