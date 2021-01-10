@@ -25,9 +25,10 @@ let connectionID = 0; //each websocket receives a unique ID
 let connectedPlayers = 0;
 
 wss.on("connection", function (ws) {
-    //let con = ws;
-    connectedPlayers++;
-    
+    ws.on("message", function incoming(message) {
+        console.log(message);
+        //compute move
+    })
 });
 
 app.get('/play', function (req, res) {

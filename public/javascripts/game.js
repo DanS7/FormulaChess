@@ -5,9 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
         location.href = 'splash.html';
     })
 });
-document.addEventListener('DOMContentLoaded', createBoard);
-document.addEventListener('DOMContentLoaded', generatePieces);
-
+document.addEventListener('DOMContentLoaded', setup);
+let socket;
 var currentlyAttacked = [];
 
 //-----------Creating the chess board-------------//
@@ -341,4 +340,22 @@ function makeMove() {
     document.getElementById(this.className).removeChild(obj);
     this.parentElement.appendChild(obj);
     checkIfCircle();
+    moveWasMade();
+    //GIB SOME COORDINATES
+}
+
+function setup() {
+    socket = new WebSocket('ws://localhost:3000');
+    socket.onopen = function () {
+        createBoard();
+        generatePieces();
+    };
+    socket.onclose = function () {
+        socket.send("bye bye");
+    };
+}
+
+function moveWasMade() {
+    socket.send("Move was made");
+    //Here block the player from making other moves
 }
