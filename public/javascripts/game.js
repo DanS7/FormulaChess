@@ -337,25 +337,37 @@ function showKingMoves(color, posX, posY) {
 //---------//
 function makeMove() {
     let obj = document.getElementById(this.className).childNodes.item(0);
+    let oldCoords = obj.parentElement.id;
     document.getElementById(this.className).removeChild(obj);
     this.parentElement.appendChild(obj);
+    let newCoords = obj.parentElement.id;
     checkIfCircle();
-    moveWasMade();
-    //GIB SOME COORDINATES
+    moveWasMade(oldCoords, newCoords);
+    //Coordinates work, Dan needs to look how to interpret them
+    //coordinates format: "d1d2", "e4a1", etc.
+    //format: initialPosition + finalPosition
 }
 
+//Sets up the websocket when a user enters game.html
+TODO:
+//Make the port responsive
 function setup() {
     socket = new WebSocket('ws://localhost:3000');
     socket.onopen = function () {
-        createBoard();
-        generatePieces();
+        console.log("check"); //helps the dev to see if it works
+        createBoard(); //Create the chess board
+        generatePieces(); //Generate the pieces and their eventListeners
     };
     socket.onclose = function () {
-        socket.send("bye bye");
+        socket.send("bye bye"); //helps the dev
     };
+    socket.onmessage = function (event) {
+        console.log(event.data); //helps the dev
+    }
 }
 
-function moveWasMade() {
-    socket.send("Move was made");
+function moveWasMade(oldC, newC) {
+    socket.send(oldC + newC);
     //Here block the player from making other moves
+    //Until opponent moves
 }
