@@ -49,4 +49,13 @@ game.prototype.userColor = function () {
     this.black.send(messages.S_PLAYER_B);
 }
 
+game.prototype.getOpponentSocket = function (ws) {
+    if(this.white === ws) {
+        return this.black;
+    }
+    return this.white;
+}
+
+
+
 module.exports = game;

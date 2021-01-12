@@ -367,7 +367,7 @@ function setup() {
         let message = JSON.parse(event.data);
         switch (message.type) {
             case "PLAYER-TYPE":
-                if(message.data === 'white') {
+                if(message.data === 'White') {
                     //restrict('black');
                     console.log("You are white!");
                 }
@@ -376,6 +376,13 @@ function setup() {
                     console.log("You are black!");
                 }
                 break;
+            case "SET-MOVE":
+                console.log(message.data);
+                //make this move, string is in message.data
+            case "GAME-ABORTED":
+                //TODO: YOU WIN MESSAGE
+                window.location.replace("http://localhost:3000");
+                socket.close();
         }
     }
 }

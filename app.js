@@ -69,9 +69,20 @@ wss.on("connection", function (ws) {
     ws.on('message', function incoming(event) { //when a message comes from a user
         let index = websockets.indexOf(ws); //identify our user id
         let gameInstance = webSocketToGame[index]; //identify corresponding game instance
-        //gameInstance.sendMessage(event); //send message to the game instance/other user
+        let opponent = gameInstance.getOpponentSocket(ws); //get opponent socket
+        let message = messages.O_MOVE; //message is a move object
+        message.data = event; //
+        opponent.send(JSON.stringify(message)); //send move to opponent socket
     })
     console.log(webSocketToGame[connectionID] !== undefined);
+
+    ws.onclose = function (event) {
+        let index = websockets.indexOf(ws);
+        let gameInstance = webSocketToGame[index];
+        let opponent = gameInstance.getOpponentSocket(ws);
+        let message = messages.O_GAME_ABORTED;
+        opponent.send(JSON.stringify(message));
+    }
 });
 
 //Redirect for the play button
