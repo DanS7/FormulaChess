@@ -363,6 +363,20 @@ function setup() {
     };
     socket.onmessage = function (event) {
         console.log(event.data); //helps the dev
+        //TODO Here u should make some javascript and trasmit the move to the front-end
+        let message = JSON.parse(event.data);
+        switch (message.type) {
+            case "PLAYER-TYPE":
+                if(message.data === 'white') {
+                    //restrict('black');
+                    console.log("You are white!");
+                }
+                else {
+                    //restrict('white');
+                    console.log("You are black!");
+                }
+                break;
+        }
     }
 }
 

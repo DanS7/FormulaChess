@@ -25,7 +25,7 @@ const wss = new websocket.Server({ server });
 const websockets = [];
 
 //Each connected socket will have an iD
-let connectionID = 0;
+let connectionID = -1;
 
 //Each game created will have an iD
 let gameID = 0;
@@ -39,7 +39,8 @@ let currentGame;
 
 //When a ws(user) connects to wss(our server):
 wss.on("connection", function (ws) {
-    websockets[connectionID++] = ws; //put new user socket in array
+    connectionID++;
+    websockets[connectionID] = ws; //put new user socket in array
     if(gameInstances.length === 0) { //if first user
         gameInstances[gameID] = new Game(gameID); //create new game at gameInstances[0]
         currentGame = gameInstances[gameID]; //
@@ -59,16 +60,18 @@ wss.on("connection", function (ws) {
             console.log('new current game');//for dev
         }
         else { //One player already in currentGame, 2nd comes now
-            webSocketToGame[connectionID] = gameInstances[gameID]; //link user to game
+            webSocketToGame[connectionID] = gameInstances[gameID - 1]; //link user to game
             currentGame.addPlayer(ws); //add the player to the game
             console.log('second player added'); //for dev
+            currentGame.userColor();
         }
     }
     ws.on('message', function incoming(event) { //when a message comes from a user
         let index = websockets.indexOf(ws); //identify our user id
         let gameInstance = webSocketToGame[index]; //identify corresponding game instance
-        gameInstance.sendMessage(event); //send message to the game instance/other user
+        //gameInstance.sendMessage(event); //send message to the game instance/other user
     })
+    console.log(webSocketToGame[connectionID] !== undefined);
 });
 
 //Redirect for the play button
