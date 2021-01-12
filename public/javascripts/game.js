@@ -12,10 +12,17 @@ let playerColor;
 //-----------Creating the chess board-------------//
 function createBoard() {
     const container = document.getElementById("board");
-
-    for(let i = 0; i < 8; i++) {
-        const row = createRow(i);
-        container.appendChild(row);
+    if(playerColor === 'white') {
+        for (let i = 0; i < 8; i++) {
+            const row = createRow(i);
+            container.appendChild(row);
+        }
+    }
+    else {
+        for(let i = 7; i >= 0; i--) {
+            const row = createRow(i);
+            container.appendChild(row);
+        }
     }
 }
 
@@ -234,7 +241,7 @@ function handleMove() {
 function showPawnMoves(color, posX, posY) {
     let thisPos = createPosition(posX, posY, 0, 0);
     if(color === 'white') {
-        //We need to look above
+        //We need to look above 1 or 2 spaces
         const nextPos = createPosition(posX, parseInt(posY) , 0, 1);
         if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
             spawnCircle(nextPos, thisPos);
@@ -244,6 +251,17 @@ function showPawnMoves(color, posX, posY) {
                 const extraPos = createPosition(posX, parseInt(posY), 0, 2);
                 spawnCircle(extraPos, thisPos);
             }
+        }
+
+        //Check if pawn can attack
+        let attackPos1 = createPosition(posX, posY, -1, 1);
+        let attackPos2 = createPosition(posX, posY, 1, 1);
+
+        if(document.getElementById(attackPos1).hasChildNodes()) {
+            spawnCircle(attackPos1, thisPos);
+        }
+        if(document.getElementById(attackPos2).hasChildNodes()) {
+            spawnCircle(attackPos2, thisPos);
         }
     }
 
@@ -258,6 +276,16 @@ function showPawnMoves(color, posX, posY) {
                 const extraPos = createPosition(posX, parseInt(posY), 0, -2);
                 spawnCircle(extraPos, thisPos);
             }
+        }
+
+        //Check if pawn can attack
+        let attackPos1 = createPosition(posX, posY, -1, -1);
+        let attackPos2 = createPosition(posX, posY, 1, -1);
+        if(document.getElementById(attackPos1).hasChildNodes()) {
+            spawnCircle(attackPos1, thisPos);
+        }
+        if(document.getElementById(attackPos2).hasChildNodes()) {
+            spawnCircle(attackPos2, thisPos);
         }
     }
 }
@@ -335,6 +363,8 @@ function showKingMoves(color, posX, posY) {
     }
 }
 
+
+
 function makeMove() {
 
     let oldCoords = this.className.replace('Circle', '');
@@ -357,7 +387,6 @@ function makeMove() {
 function makeOpponentMove(data) {
     let oldPos = data.substr(0, 2);
     let newPos = data.substr(2, 2);
-    console.log("Opponent moved " + oldPos + " to " + newPos);
 
     let piece = document.getElementById(oldPos).childNodes[0];
     piece.parentElement.removeChild(piece);
@@ -371,10 +400,8 @@ function makeOpponentMove(data) {
 }
 
 function takePiece() {
-    console.log("Took piece.");
     let oldPos = this.className.substr(this.className.length - 2, 2);
     let newPos = this.parentElement.id;
-    console.log(oldPos + " " + newPos);
     let takerPiece = document.getElementById(oldPos).childNodes[0];
     let takenPiece = document.getElementById(newPos).childNodes[0];
     document.getElementById(newPos).removeChild(takenPiece);
@@ -408,8 +435,6 @@ function setup() {
     socket = new WebSocket('ws://localhost:3000');
     socket.onopen = function () {
         console.log("check"); //helps the dev to see if it works
-        createBoard(); //Create the chess board
-        generatePieces(); //Generate the pieces and their eventListeners
     };
     socket.onclose = function () {
         socket.send("bye bye"); //helps the dev
@@ -423,12 +448,16 @@ function setup() {
                 if(message.data === 'White') {
                     playerColor = 'white';
                     restrict('black'); //Only enable black chess pieces to be moved
+                    createBoard(); //Create the chess board
+                    generatePieces(); //Generate the pieces and their eventListeners
                     console.log("You are white!");
                 }
                 else {
                     playerColor = 'black';
                     disableMoves(); //White starts so black cannot move at first
                     restrict('white'); //Only enable white chess pieces to be moved
+                    createBoard(); //Create the chess board
+                    generatePieces(); //Generate the pieces and their eventListeners
                     console.log("You are black!");
                 }
                 break;
