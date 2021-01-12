@@ -7,23 +7,23 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 document.addEventListener('DOMContentLoaded', setup);
 let socket;
-var currentlyAttacked = [];
+let playerColor;
 
 //-----------Creating the chess board-------------//
 function createBoard() {
-    var container = document.getElementById("board");
+    const container = document.getElementById("board");
 
     for(let i = 0; i < 8; i++) {
-        var row = createRow(i);
+        const row = createRow(i);
         container.appendChild(row);
     }
 }
 
 function createRow(rownum) {
-    var row = document.createElement('div');
+    const row = document.createElement('div');
     row.id = 'row';
     for(let i = 0; i < 8; i++) {
-        var testChild = document.createElement('div');
+        const testChild = document.createElement('div');
         if((rownum + i) % 2 === 0) {
             testChild.className = 'white';
         }
@@ -37,28 +37,30 @@ function createRow(rownum) {
 }
 
 function position(rownum, colnum) {
-    var x, y;
+    let x, y;
     x = 8 - rownum;
     y = String.fromCharCode(97 + colnum);
     return y.concat(x);
 }
 
 function generatePieces() {
-    //Spawning pawns | Black and White
+    let pos_white;
+    let pos_black;
+//Spawning pawns | Black and White
     for(let i = 0; i < 8; i++) {
-        var pawn_black = document.createElement('img');
+        const pawn_black = document.createElement('img');
         pawn_black.className = 'blackChessPiece';
-        pawn_black.id = 'pawn';
+        pawn_black.className += 'Pawn';
         pawn_black.src = 'images/Black Pieces/Pawn_Black.png';
         pawn_black.addEventListener('click', handleMove);
-        var pos_black = String.fromCharCode(97 + i);
+        pos_black = String.fromCharCode(97 + i);
 
-        var pawn_white = document.createElement('img');
+        const pawn_white = document.createElement('img');
         pawn_white.className = 'whiteChessPiece';
-        pawn_white.id = 'pawn';
+        pawn_white.className += 'Pawn';
         pawn_white.src = 'images/White Pieces/Pawn_White.png';
         pawn_white.addEventListener('click', handleMove);
-        var pos_white = String.fromCharCode(97 + i);
+        pos_white = String.fromCharCode(97 + i);
 
         document.getElementById(pos_black.concat('7')).appendChild(pawn_black);
         document.getElementById(pos_white.concat('2')).appendChild(pawn_white);
@@ -66,13 +68,13 @@ function generatePieces() {
 
     //Spawning back row
     for(let i = 0; i < 8; i++) {
-        var pos = String.fromCharCode(97 + i);
+        const pos = String.fromCharCode(97 + i);
 
-        var pos_black = pos.concat('8');
-        var pos_white = pos.concat('1');
+        pos_black = pos.concat('8');
+        pos_white = pos.concat('1');
 
-        var white_piece = document.createElement('img');
-        var black_piece = document.createElement('img');
+        const white_piece = document.createElement('img');
+        const black_piece = document.createElement('img');
 
         white_piece.className = 'whiteChessPiece';
         black_piece.className = 'blackChessPiece';
@@ -85,44 +87,44 @@ function generatePieces() {
             case('a'):
             case('h'):
                 white_piece.src = 'images/White Pieces/Rook_White.png';
-                white_piece.id = 'rook';
+                white_piece.className += 'Rook';
 
                 black_piece.src = 'images/Black Pieces/Rook_Black.png';
-                black_piece.id = 'rook';
+                black_piece.className += 'Rook';
                 break;
             //Knight
             case('b'):
             case('g'):
                 white_piece.src = 'images/White Pieces/Knight_White.png';
-                white_piece.id = 'knight';
+                white_piece.className += 'Knight';
 
                 black_piece.src = 'images/Black Pieces/Knight_Black.png';
-                black_piece.id = 'knight';
+                black_piece.className += 'Knight';
                 break;
             //Bishop
             case('c'):
             case('f'):
                 white_piece.src = 'images/White Pieces/Bishop_White.png';
-                white_piece.id = 'bishop';
+                white_piece.className += 'Bishop';
 
                 black_piece.src = 'images/Black Pieces/Bishop_Black.png';
-                black_piece.id = 'bishop';
+                black_piece.className += 'Bishop';
                 break;
             //Queen
             case('d'):
                 white_piece.src = 'images/White Pieces/Queen_White.png';
-                white_piece.id = 'queen';
+                white_piece.className += 'Queen';
 
                 black_piece.src = 'images/Black Pieces/Queen_Black.png';
-                black_piece.id = 'queen';
+                black_piece.className += 'Queen';
                 break;
             //King
             case('e'):
                 white_piece.src = 'images/White Pieces/King_White.png';
-                white_piece.id = 'king';
+                white_piece.className += 'King';
 
                 black_piece.src = 'images/Black Pieces/King_Black.png';
-                black_piece.id = 'king';
+                black_piece.className += 'King';
                 break;
         }
 
@@ -148,81 +150,81 @@ function createPosition(posX, posY, offsetX, offsetY) {
 function makeCircle(parent) {
     let circle = document.createElement('img');
     circle.src = 'images/circle.png';
-    circle.id = 'circle';
     circle.className = parent;
+    circle.className += 'Circle';
     circle.addEventListener('click', makeMove);
     return circle;
 }
 
 function spawnCircle(spawnPos, parentPos) {
     let parent = document.getElementById(parentPos).childNodes[0];
-    //console.log(parent);
-    if(document.getElementById(spawnPos) != null) {
-        if(!document.getElementById(spawnPos).hasChildNodes()) {
-            document.getElementById(spawnPos).appendChild(makeCircle(parentPos));
-            return true;
+    let parentColor;
+    if(parent.className.includes('white')) {
+        parentColor = 'white';
+    }
+    else {
+        parentColor = 'black';
+    }
+
+    let square = document.getElementById(spawnPos);
+    if(square != null) {
+        if(square.hasChildNodes()) {
+            let attackedPiece = square.childNodes[0];
+            if(!attackedPiece.className.includes(parentColor) && !attackedPiece.className.includes('Attacked')) {
+                attackedPiece.className += 'Attacked' + parentPos;
+                attackedPiece.addEventListener('click', takePiece);
+            }
         }
         else {
-            //console.log(document.getElementById(spawnPos));
-            let attackedPiece = document.getElementById(spawnPos).childNodes[0];
-            if(attackedPiece.className !== parent.className) {
-                console.log("Can attack piece at " + spawnPos);
-                if(!document.getElementById(spawnPos).childNodes[0].className.includes('Attacked')) {
-                    document.getElementById(spawnPos).childNodes[0].className += 'Attacked';
-                    currentlyAttacked[++currentlyAttacked.length] = document.getElementById(spawnPos).childNodes[0];
-                }
-            }
+            square.appendChild(makeCircle(parentPos));
+            return true;
         }
     }
     return false;
 }
 
 function checkIfCircle() {
-    let temp = document.getElementById('circle');
-    while(temp != null) {
-        temp.parentNode.removeChild(temp);
-        temp = document.getElementById('circle');
-    }
-
-    for(let i = 0; i < currentlyAttacked.length; i++) {
-        if(typeof currentlyAttacked[i] != "undefined") {
-            if (currentlyAttacked[i].className.includes('white')) {
-                currentlyAttacked[i].className = 'whiteChessPiece';
-            } else if (currentlyAttacked[i].className.includes('black')) {
-                currentlyAttacked[i].className = 'blackChessPiece';
-            }
-            console.log(currentlyAttacked[i]);
-            currentlyAttacked[i] = null;
+    let img = document.querySelectorAll('img');
+    for(let i = 0; i < img.length; i++) {
+        if(img[i].className.includes('Circle')) {
+            img[i].parentNode.removeChild(img[i]);
+        }
+        else if(img[i].className.includes('Attacked')) {
+            img[i].className = img[i].className.replace('Attacked', '');
+            img[i].className = img[i].className.substr(0, img[i].className.length - 2);
         }
     }
-    currentlyAttacked = [];
 }
-
-
 
 function handleMove() {
     checkIfCircle();
-    const color = this.className;
+    let color;
+    if(this.className.includes('white')) {
+        color = 'white';
+    }
+    else {
+        color = 'black';
+    }
     const posX = this.parentElement.id.charAt(0);
     const posY = this.parentElement.id.charAt(1);
-    const type = this.id;
+    const type = this.className.replace('whiteChessPiece', '').replace('blackChessPiece', '');
     switch (type) {
-        case('pawn'):
+        case('Pawn'):
             showPawnMoves(color, posX, posY);
             break;
-        case('rook'):
+        case('Rook'):
             showRookMoves(color, posX, posY);
             break;
-        case('knight'):
+        case('Knight'):
             showKnightMoves(color, posX, posY);
             break;
-        case('bishop'):
+        case('Bishop'):
             showBishopMoves(color, posX, posY);
             break;
-        case('king'):
+        case('King'):
             showKingMoves(color, posX, posY);
             break;
-        case('queen'):
+        case('Queen'):
             showQueenMoves(color, posX, posY);
             break;
 
@@ -231,7 +233,7 @@ function handleMove() {
 
 function showPawnMoves(color, posX, posY) {
     let thisPos = createPosition(posX, posY, 0, 0);
-    if(color === 'whiteChessPiece') {
+    if(color === 'white') {
         //We need to look above
         const nextPos = createPosition(posX, parseInt(posY) , 0, 1);
         if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
@@ -245,7 +247,7 @@ function showPawnMoves(color, posX, posY) {
         }
     }
 
-    if(color === 'blackChessPiece') {
+    if(color === 'black') {
         //We look below
         const nextPos = createPosition(posX, parseInt(posY) , 0, -1);
         if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
@@ -304,7 +306,6 @@ function showRookMoves(color, posX, posY) {
             if(!spawnCircle(newPos, thisPos)) {
                 break;
             }
-            console.log("something!");
             k++;
         } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
         k = 1;
@@ -334,22 +335,74 @@ function showKingMoves(color, posX, posY) {
     }
 }
 
-//---------//
 function makeMove() {
-    let obj = document.getElementById(this.className).childNodes.item(0);
-    let oldCoords = obj.parentElement.id;
-    document.getElementById(this.className).removeChild(obj);
-    this.parentElement.appendChild(obj);
-    let newCoords = obj.parentElement.id;
+
+    let oldCoords = this.className.replace('Circle', '');
+    let newCoords = this.parentElement.id;
     checkIfCircle();
+    //Remove object from old position
+    let piece = document.getElementById(oldCoords).childNodes[0];
+    document.getElementById(oldCoords).removeChild(piece);
+    //Add it to the new position
+    document.getElementById(newCoords).appendChild(piece);
+
+    disableMoves();
+
     moveWasMade(oldCoords, newCoords);
     //Coordinates work, Dan needs to look how to interpret them
     //coordinates format: "d1d2", "e4a1", etc.
     //format: initialPosition + finalPosition
 }
 
+function makeOpponentMove(data) {
+    let oldPos = data.substr(0, 2);
+    let newPos = data.substr(2, 2);
+    console.log("Opponent moved " + oldPos + " to " + newPos);
+
+    let piece = document.getElementById(oldPos).childNodes[0];
+    piece.parentElement.removeChild(piece);
+
+    while(document.getElementById(newPos).hasChildNodes()) {
+        document.getElementById(newPos).removeChild(document.getElementById(newPos).childNodes[0]);
+    }
+    document.getElementById(newPos).appendChild(piece);
+
+    enableMoves();
+}
+
+function takePiece() {
+    console.log("Took piece.");
+    let oldPos = this.className.substr(this.className.length - 2, 2);
+    let newPos = this.parentElement.id;
+    console.log(oldPos + " " + newPos);
+    let takerPiece = document.getElementById(oldPos).childNodes[0];
+    let takenPiece = document.getElementById(newPos).childNodes[0];
+    document.getElementById(newPos).removeChild(takenPiece);
+    document.getElementById(newPos).appendChild(takerPiece);
+
+    checkIfCircle();
+    disableMoves();
+    moveWasMade(oldPos, newPos);
+}
+
+function enableMoves() {
+    let img = document.querySelectorAll('img');
+    for(let i = 0; i < img.length; i++) {
+        if(img[i].className.includes(playerColor + 'ChessPiece')) {
+            img[i].addEventListener('click', handleMove);
+        }
+    }
+}
+
+function disableMoves() {
+    let img = document.querySelectorAll('img');
+    for(let i = 0; i < img.length; i++) {
+        img[i].removeEventListener('click', handleMove);
+    }
+}
+
 //Sets up the websocket when a user enters game.html
-TODO:
+//TODO:
 //Make the port responsive
 function setup() {
     socket = new WebSocket('ws://localhost:3000');
@@ -362,27 +415,42 @@ function setup() {
         socket.send("bye bye"); //helps the dev
     };
     socket.onmessage = function (event) {
-        console.log(event.data); //helps the dev
-        //TODO Here u should make some javascript and trasmit the move to the front-end
+        //console.log(event.data); //helps the dev
+        //TODO Here u should make some javascript and transmit the move to the front-end
         let message = JSON.parse(event.data);
         switch (message.type) {
             case "PLAYER-TYPE":
                 if(message.data === 'White') {
-                    //restrict('black');
+                    playerColor = 'white';
+                    restrict('black'); //Only enable black chess pieces to be moved
                     console.log("You are white!");
                 }
                 else {
-                    //restrict('white');
+                    playerColor = 'black';
+                    disableMoves(); //White starts so black cannot move at first
+                    restrict('white'); //Only enable white chess pieces to be moved
                     console.log("You are black!");
                 }
                 break;
             case "SET-MOVE":
-                console.log(message.data);
+                //console.log(message.data);
+                makeOpponentMove(message.data);
                 //make this move, string is in message.data
+                break;
             case "GAME-ABORTED":
                 //TODO: YOU WIN MESSAGE
                 window.location.replace("http://localhost:3000");
                 socket.close();
+                break;
+        }
+    }
+}
+
+function restrict(disable) {
+    let img = document.querySelectorAll('img');
+    for(let i = 0; i < img.length; i++) {
+        if(img[i].className.includes(disable)) {
+            img[i].removeEventListener('click', handleMove);
         }
     }
 }

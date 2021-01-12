@@ -139,14 +139,14 @@ body {
   background-color: #ffad94;
 }
 
-.whiteChessPiece, .blackChessPiece {
+img[class^="whiteChessPiece"], img[class^="blackChessPiece"] {
   padding-top: 5%;
   height: 100%;
   width: 100%;
   cursor: pointer;
 }
 
-.whiteChessPieceAttacked, .blackChessPieceAttacked {
+img[class*="Attacked"] {
   padding-top: 5%;
   height: 100%;
   width: 100%;
@@ -154,7 +154,7 @@ body {
   background-color: red;
 }
 
-#circle {
+img[class*='Circle'] {
   margin: auto;
   height: 30%;
   width: 30%;
