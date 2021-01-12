@@ -447,17 +447,17 @@ function setup() {
             case "PLAYER-TYPE":
                 if(message.data === 'White') {
                     playerColor = 'white';
-                    restrict('black'); //Only enable black chess pieces to be moved
                     createBoard(); //Create the chess board
                     generatePieces(); //Generate the pieces and their eventListeners
+                    restrict('black'); //Only enable black chess pieces to be moved
                     console.log("You are white!");
                 }
                 else {
                     playerColor = 'black';
                     disableMoves(); //White starts so black cannot move at first
-                    restrict('white'); //Only enable white chess pieces to be moved
                     createBoard(); //Create the chess board
                     generatePieces(); //Generate the pieces and their eventListeners
+                    restrict('white'); //Only enable white chess pieces to be moved
                     console.log("You are black!");
                 }
                 break;
