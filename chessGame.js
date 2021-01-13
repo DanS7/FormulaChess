@@ -49,13 +49,35 @@ game.prototype.userColor = function () {
     this.black.send(messages.S_PLAYER_B);
 }
 
-game.prototype.getOpponentSocket = function (ws) {
-    if(this.white === ws) {
+game.prototype.getRemainingSocket = function () {
+    if(this.white === null) {
         return this.black;
     }
     return this.white;
 }
 
+game.prototype.hasTwoPlayers = function () {
+    return this.black !== null && this.white !== null;
+}
 
+game.prototype.hasAnotherPlayer = function () {
+    return this.black !== null || this.white !== null;
+}
+
+game.prototype.clearPlayer = function (ws) {
+    if(this.black === ws) {
+        this.black = null;
+    }
+    else if(this.white === ws) {
+        this.white = null;
+    }
+}
+
+game.prototype.getOpponentSocket = function (ws) {
+    if(ws === this.white) {
+        return this.black;
+    }
+    return this.white;
+}
 
 module.exports = game;

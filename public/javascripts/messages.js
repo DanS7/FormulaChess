@@ -51,14 +51,6 @@
     };
     //exports.S_MOVE does not exist, as we always need to fill the data property
 
-    /*
-     * Player Black to server OR server to Player White: Black moved this
-     */
-    exports.T_MOVE = "SET-MOVE";
-    exports.O_MOVE = {
-        type: exports.T_MOVE,
-        data: null
-    };
     //exports.S_MOVE does not exist, as data needs to be set
 
     /*

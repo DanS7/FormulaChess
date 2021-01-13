@@ -5,13 +5,24 @@ const messages = require("./public/javascripts/messages");
 const Game = require("./chessGame");
 const websocket = require("ws");
 const app = express();
+const ejs = require("ejs");
 
 const port = process.argv[2]; //The port
+
+app.get("/", (req, res) => {
+    res.render("splash.ejs", {
+        gamesPlayed: playedGames,
+        players: playersInGame
+    });
+});
 app.use(express.static(__dirname + "/public"));
 //Wipe .html extension from urls
 app.use(express.static('public', {
-    extensions: ['html'],
+    extensions: ['html', 'ejs'],
 }));
+
+app.set("view engine", "ejs");
+
 //Array of all the games
 const gameInstances = [];
 
@@ -37,34 +48,31 @@ let webSocketToGame = [];
 //Current game
 let currentGame;
 
+//Number of games played TODO
+let playedGames = 0;
+
+//Number of players currently in a match
+let playersInGame = 0;
+
 //When a ws(user) connects to wss(our server):
 wss.on("connection", function (ws) {
     connectionID++;
+    playersInGame++;
     websockets[connectionID] = ws; //put new user socket in array
-    if(gameInstances.length === 0) { //if first user
+    if(gameInstances[gameID] === undefined) { //if first user in game
         gameInstances[gameID] = new Game(gameID); //create new game at gameInstances[0]
         currentGame = gameInstances[gameID]; //
         //keep track of which client is connected to which game instance
-        webSocketToGame[connectionID] = gameInstances[gameID]; //connectionID determines game
-        gameID++; //prepare to create new game after current one is filled
-        currentGame.addPlayer(ws); //add the first user to our currentGame
-        console.log("First game instance"); //for dev
+        webSocketToGame[connectionID] = currentGame; //connectionID determines game
+        currentGame.addPlayer(ws); //add the first user to our new game
+        console.log("New game instance"); //for dev
     }
     else {
-        if(currentGame.isReady()) { //if we have 2 players
-            gameInstances[gameID] = new Game(gameID); //create new game
-            currentGame = gameInstances[gameID]; //update currentGame
-            webSocketToGame[connectionID] = gameInstances[gameID]; //link user to specific game by connectionID
-            gameID++;//update
-            currentGame.addPlayer(ws);//add user to currentGame
-            console.log('new current game');//for dev
-        }
-        else { //One player already in currentGame, 2nd comes now
-            webSocketToGame[connectionID] = gameInstances[gameID - 1]; //link user to game
-            currentGame.addPlayer(ws); //add the player to the game
-            console.log('second player added'); //for dev
-            currentGame.userColor();
-        }
+        webSocketToGame[connectionID] = gameInstances[gameID];
+        currentGame.addPlayer(ws);
+        gameID++;
+        console.log("Second player added, start game!");
+        currentGame.userColor();
     }
     ws.on('message', function incoming(event) { //when a message comes from a user
         let index = websockets.indexOf(ws); //identify our user id
@@ -77,11 +85,17 @@ wss.on("connection", function (ws) {
     console.log(webSocketToGame[connectionID] !== undefined);
 
     ws.onclose = function (event) {
+        playersInGame--;
         let index = websockets.indexOf(ws);
         let gameInstance = webSocketToGame[index];
-        let opponent = gameInstance.getOpponentSocket(ws);
-        let message = messages.O_GAME_ABORTED;
-        opponent.send(JSON.stringify(message));
+        gameInstance.clearPlayer(ws);
+        if(gameInstance.hasAnotherPlayer()) {
+            playedGames++;
+            let opponent = gameInstance.getRemainingSocket();
+            let message = messages.O_GAME_ABORTED;
+            opponent.send(JSON.stringify(message));
+        }
+        gameInstances[gameID] = undefined;
     }
 });
 

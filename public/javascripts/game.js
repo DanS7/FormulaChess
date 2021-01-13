@@ -2,7 +2,8 @@
 //Replacement with actual functionality will be added later
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('concedeButton').addEventListener('click', function () {
-        location.href = 'splash.html';
+        dissconnectSocket();
+        location.href = "/";
     })
 });
 document.addEventListener('DOMContentLoaded', setup);
@@ -488,4 +489,8 @@ function moveWasMade(oldC, newC) {
     socket.send(oldC + newC);
     //Here block the player from making other moves
     //Until opponent moves
+}
+
+function dissconnectSocket() {
+    socket.close();
 }

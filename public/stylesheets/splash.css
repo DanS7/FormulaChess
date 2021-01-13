@@ -48,3 +48,9 @@ td {
     color: white;
     cursor: pointer;
 }
+
+.stat {
+    background-color: #153973;
+    font-family: fantasy;
+    font-size: large;
+}
