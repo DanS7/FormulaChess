@@ -4,8 +4,9 @@ let game = function (gameID) {
     this.white = null;
     this.black = null;
     this.id = gameID;
-    this.firstPlayer = Math.random(); //if > 0.49 firstPlayer to come is white
     this.gameState = '0 JOINT';
+    this.isWhite = false;
+    this.isBlack = false;
 }
 
 //Set the user which will be black
@@ -21,12 +22,26 @@ game.prototype.setWhite = function (ws) {
 //Adds a player, if first come white, then black
 //TODO: Implement random sides
 game.prototype.addPlayer = function (ws) {
-    if(this.white !== null) {
-        this.setBlack(ws);
+    let random = Math.random();
+    if(this.isWhite === false && this.isBlack === false) {
+        if(random <= 0.49) {
+            this.white = ws;
+            this.isWhite = true;
+            return;
+        }
+        else {
+            this.black = ws;
+            this.isBlack = true;
+            return;
+        }
     }
-    else {
-        this.setWhite(ws);
+    if(this.isWhite === false && this.isBlack === true) {
+        this.isWhite = true;
+        this.white = ws;
+        return;
     }
+    this.isBlack = true;
+    this.black = ws;
 }
 
 //Returns true if 2 users connected
