@@ -408,7 +408,9 @@ function showRookMoves(posX, posY, res, flag) {
 }
 
 function showQueenMoves(posX, posY, res, flag) {
+    checkIfCircle();
     showRookMoves(posX, posY, res, flag);
+    checkIfCircle();
     showBishopMoves(posX, posY, res, flag);
 }
 
@@ -418,6 +420,10 @@ function showKingMoves(posX, posY, res, flag) {
     for(let i = 0; i < moves.length; i++) {
         for(let j = 0; j < moves.length; j++) {
             let newPos = createPosition(posX, posY, moves[i], moves[j]);
+            if(!positionInGrid(newPos) ||
+                (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
+                continue;
+            }
             if(flag) {
                checkLastPiece(newPos, thisPos, res, flag);
             }
@@ -478,6 +484,11 @@ function makeOpponentMove(data) {
     document.getElementById(newPos).appendChild(piece);
     enableMoves();
     inCheck = checkCondition();
+    if(inCheck) {
+        if(checkMate()) {
+            console.log("MATE!");
+        }
+    }
 }
 
 function takePiece() {
@@ -561,6 +572,25 @@ function checkCondition() {
     else {
         return false;
     }
+}
+
+function checkMate() {
+    let playerPieces = document.querySelectorAll('img');
+    for(let i = 0; i < playerPieces.length; i++) {
+        if(playerPieces[i].className.includes(playerColor + 'ChessPiece')) {
+            //Found a player piece
+            //We need to check if any moves can be made
+            checkIfCircle();
+            handleMove(playerPieces[i], isValidPosition(), false);
+            if(currentMoves.length > 0) {
+                //console.log("Found move for piece: ");
+                //console.log(playerPieces[i]);
+                //console.log(currentMoves);
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 function testPosition(pos, parentPos) {
