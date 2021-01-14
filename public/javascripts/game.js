@@ -7,8 +7,11 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 });
 document.addEventListener('DOMContentLoaded', setup);
+
 let socket;
 let playerColor;
+let currentlyAttacked = [];
+let inCheck;
 
 //-----------Creating the chess board-------------//
 function createBoard() {
@@ -60,14 +63,14 @@ function generatePieces() {
         pawn_black.className = 'blackChessPiece';
         pawn_black.className += 'Pawn';
         pawn_black.src = 'images/Black Pieces/Pawn_Black.png';
-        pawn_black.addEventListener('click', handleMove);
+        pawn_black.addEventListener('click', helper);
         pos_black = String.fromCharCode(97 + i);
 
         const pawn_white = document.createElement('img');
         pawn_white.className = 'whiteChessPiece';
         pawn_white.className += 'Pawn';
         pawn_white.src = 'images/White Pieces/Pawn_White.png';
-        pawn_white.addEventListener('click', handleMove);
+        pawn_white.addEventListener('click', helper);
         pos_white = String.fromCharCode(97 + i);
 
         document.getElementById(pos_black.concat('7')).appendChild(pawn_black);
@@ -87,8 +90,8 @@ function generatePieces() {
         white_piece.className = 'whiteChessPiece';
         black_piece.className = 'blackChessPiece';
 
-        white_piece.addEventListener('click', handleMove);
-        black_piece.addEventListener('click', handleMove);
+        white_piece.addEventListener('click', helper);
+        black_piece.addEventListener('click', helper);
 
         switch(pos) {
             //Rook
@@ -141,7 +144,11 @@ function generatePieces() {
     }
 
 }
+
 //------------------------------------------------//
+function helper() {
+    handleMove(this, spawnCircle);
+}
 
 function createPosition(posX, posY, offsetX, offsetY) {
     let newX = posX;
@@ -180,6 +187,7 @@ function spawnCircle(spawnPos, parentPos) {
             let attackedPiece = square.childNodes[0];
             if(!attackedPiece.className.includes(parentColor) && !attackedPiece.className.includes('Attacked')) {
                 attackedPiece.className += 'Attacked' + parentPos;
+                attackedPiece.id = 'active-button';
                 attackedPiece.addEventListener('click', takePiece);
             }
         }
@@ -192,8 +200,12 @@ function spawnCircle(spawnPos, parentPos) {
 }
 
 function checkIfCircle() {
+    while(document.getElementById('active-button')) {
+        document.getElementById('active-button').id = '';
+    }
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
+        img[i].removeEventListener('click', takePiece);
         if(img[i].className.includes('Circle')) {
             img[i].parentNode.removeChild(img[i]);
         }
@@ -204,94 +216,108 @@ function checkIfCircle() {
     }
 }
 
-function handleMove() {
+function handleMove(obj, res, flag) {
+    if(flag == null) {
+        flag = false;
+    }
     checkIfCircle();
-    let color;
-    if(this.className.includes('white')) {
-        color = 'white';
-    }
-    else {
-        color = 'black';
-    }
-    const posX = this.parentElement.id.charAt(0);
-    const posY = this.parentElement.id.charAt(1);
-    const type = this.className.replace('whiteChessPiece', '').replace('blackChessPiece', '');
+    //this.id = 'active-button';
+    let color = obj.className.substr(0, 5);
+    const posX = obj.parentElement.id.charAt(0);
+    const posY = obj.parentElement.id.charAt(1);
+    const type = obj.className.replace('whiteChessPiece', '').replace('blackChessPiece', '').replace('Check', '');
     switch (type) {
         case('Pawn'):
-            showPawnMoves(color, posX, posY);
+            showPawnMoves(color, posX, posY, res, flag);
             break;
         case('Rook'):
-            showRookMoves(color, posX, posY);
+            showRookMoves(posX, posY, res, flag);
             break;
         case('Knight'):
-            showKnightMoves(color, posX, posY);
+            showKnightMoves(posX, posY, res, flag);
             break;
         case('Bishop'):
-            showBishopMoves(color, posX, posY);
+            showBishopMoves(posX, posY, res, flag);
             break;
         case('King'):
-            showKingMoves(color, posX, posY);
+            showKingMoves(posX, posY, res, flag);
             break;
         case('Queen'):
-            showQueenMoves(color, posX, posY);
+            showQueenMoves(posX, posY, res, flag);
             break;
 
     }
 }
 
-function showPawnMoves(color, posX, posY) {
+function showPawnMoves(color, posX, posY, res, flag) {
+    //console.log(flag);
     let thisPos = createPosition(posX, posY, 0, 0);
     if(color === 'white') {
         //We need to look above 1 or 2 spaces
         const nextPos = createPosition(posX, parseInt(posY) , 0, 1);
-        if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
+        if(!flag && document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
             spawnCircle(nextPos, thisPos);
             //Check if in start position
             if(parseInt(posY) === 2) {
                 //In star position so we can move 2 spaces up
                 const extraPos = createPosition(posX, parseInt(posY), 0, 2);
-                spawnCircle(extraPos, thisPos);
+                if(!document.getElementById(extraPos).hasChildNodes()) {
+                    spawnCircle(extraPos, thisPos);
+                }
             }
         }
 
         //Check if pawn can attack
         let attackPos1 = createPosition(posX, posY, -1, 1);
         let attackPos2 = createPosition(posX, posY, 1, 1);
-
-        if(document.getElementById(attackPos1).hasChildNodes()) {
-            spawnCircle(attackPos1, thisPos);
+        if(flag) {
+            checkLastPiece(attackPos1, thisPos, res, flag);
+            checkLastPiece(attackPos2, thisPos, res, flag);
         }
-        if(document.getElementById(attackPos2).hasChildNodes()) {
-            spawnCircle(attackPos2, thisPos);
+        else {
+            if(document.getElementById(attackPos1) != null && document.getElementById(attackPos1).hasChildNodes()) {
+                res(attackPos1, thisPos);
+            }
+            if(document.getElementById(attackPos2) != null && document.getElementById(attackPos2).hasChildNodes()){
+                res(attackPos2, thisPos);
+            }
         }
     }
 
     if(color === 'black') {
         //We look below
         const nextPos = createPosition(posX, parseInt(posY) , 0, -1);
-        if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
+        if(!flag && document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
             spawnCircle(nextPos, thisPos);
             //Check if in start position
             if(parseInt(posY) === 7) {
                 //In star position so we can move 2 spaces up
                 const extraPos = createPosition(posX, parseInt(posY), 0, -2);
-                spawnCircle(extraPos, thisPos);
+                if(!document.getElementById(extraPos).hasChildNodes()) {
+                    spawnCircle(extraPos, thisPos);
+                }
             }
         }
 
         //Check if pawn can attack
         let attackPos1 = createPosition(posX, posY, -1, -1);
         let attackPos2 = createPosition(posX, posY, 1, -1);
-        if(document.getElementById(attackPos1).hasChildNodes()) {
-            spawnCircle(attackPos1, thisPos);
+        if(flag) {
+            checkLastPiece(attackPos1, thisPos, res, flag);
+            checkLastPiece(attackPos2, thisPos, res, flag);
         }
-        if(document.getElementById(attackPos2).hasChildNodes()) {
-            spawnCircle(attackPos2, thisPos);
+        else {
+            if(document.getElementById(attackPos1) != null && document.getElementById(attackPos1).hasChildNodes()) {
+                res(attackPos1, thisPos);
+            }
+            if(document.getElementById(attackPos2) != null && document.getElementById(attackPos2).hasChildNodes()){
+                res(attackPos2, thisPos);
+            }
         }
     }
 }
 
-function showKnightMoves(color, posX, posY) {
+function showKnightMoves(posX, posY, res, flag) {
     let movesX = [-1, 1];
     let movesY = [-2, 2];
     let thisPos = createPosition(posX, posY, 0, 0);
@@ -299,13 +325,19 @@ function showKnightMoves(color, posX, posY) {
         for(let j = 0; j < movesX.length; j++) {
             let pos1 = createPosition(posX, parseInt(posY), movesX[i], movesY[j]);
             let pos2 = createPosition(posX, parseInt(posY), movesY[i], movesX[j]);
-            spawnCircle(pos1, thisPos);
-            spawnCircle(pos2, thisPos);
+            if(flag) {
+                checkLastPiece(pos1, thisPos, res, flag);
+                checkLastPiece(pos2, thisPos, res, flag);
+            }
+            else {
+                res(pos1, thisPos);
+                res(pos2, thisPos);
+            }
         }
     }
 }
 
-function showBishopMoves(color, posX, posY) {
+function showBishopMoves(posX, posY, res, flag) {
     //-1 -1 | -1 1 | 1 -1 | 1 1
     let moves = [-1, 1];
     let thisPos = createPosition(posX, posY, 0, 0);
@@ -316,15 +348,20 @@ function showBishopMoves(color, posX, posY) {
             do {
                 newPos = createPosition(posX, posY, k * moves[i], k * moves[j]);
                 if(!spawnCircle(newPos, thisPos)) {
+                    //console.log("broke at: " + newPos);
                     break;
+                }
+                else if(flag) {
+                    res(newPos, thisPos);
                 }
                 k++;
             } while (document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 10);
+            checkLastPiece(newPos, thisPos, res, flag);
         }
     }
 }
 
-function showRookMoves(color, posX, posY) {
+function showRookMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     let moves = [-1, 1];
     for(let i = 0; i < moves.length; i++) {
@@ -332,39 +369,67 @@ function showRookMoves(color, posX, posY) {
         let k = 1;
         do {
             newPos = createPosition(posX, posY, k * moves[i], 0);
+            //console.log("pos: " + newPos);
             if(!spawnCircle(newPos, thisPos)) {
+                //console.log("broke");
                 break;
+            }
+            else if(flag) {
+                res(newPos, thisPos);
             }
             k++;
         } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
+        checkLastPiece(newPos, thisPos, res, flag);
         k = 1;
         do {
             newPos = createPosition(posX, posY, 0, k * moves[i]);
+            //console.log("pos: " + newPos);
             if(!spawnCircle(newPos, thisPos)) {
+                //console.log("broke");
                 break;
+            }
+            else if(flag) {
+                res(newPos, thisPos);
             }
             k++;
         } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
+        checkLastPiece(newPos, thisPos, res, flag);
     }
 }
 
-function showQueenMoves(color, posX, posY) {
-    showRookMoves(color, posX, posY);
-    showBishopMoves(color, posX, posY);
+function showQueenMoves(posX, posY, res, flag) {
+    showRookMoves(posX, posY, res, flag);
+    showBishopMoves(posX, posY, res, flag);
 }
 
-function showKingMoves(color, posX, posY) {
+function showKingMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     let moves = [-1, 0, 1];
     for(let i = 0; i < moves.length; i++) {
         for(let j = 0; j < moves.length; j++) {
             let newPos = createPosition(posX, posY, moves[i], moves[j]);
-            spawnCircle(newPos, thisPos);
+            if(flag) {
+               checkLastPiece(newPos, thisPos, res, flag);
+            }
+            else {
+                res(newPos, thisPos);
+            }
         }
     }
 }
 
-
+function checkLastPiece(newPos, thisPos, res, flag) {
+    if(flag && document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes()) {
+        let obj = document.getElementById(newPos).childNodes[0];
+        //console.log(obj.className.substr(0, 5) + " - " + document.getElementById(thisPos).childNodes[0].className.substr(0, 5));
+        if(obj.className.substr(0, 5) !== document.getElementById(thisPos).childNodes[0].className.substr(0, 5)) {
+            res(newPos, thisPos);
+        }
+    }
+    else if(flag && document.getElementById(newPos) != null && !document.getElementById(newPos).hasChildNodes()) {
+        res(newPos, thisPos);
+    }
+}
 
 function makeMove() {
 
@@ -396,8 +461,8 @@ function makeOpponentMove(data) {
         document.getElementById(newPos).removeChild(document.getElementById(newPos).childNodes[0]);
     }
     document.getElementById(newPos).appendChild(piece);
-
     enableMoves();
+    checkCondition();
 }
 
 function takePiece() {
@@ -417,15 +482,61 @@ function enableMoves() {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
         if(img[i].className.includes(playerColor + 'ChessPiece')) {
-            img[i].addEventListener('click', handleMove);
+            img[i].addEventListener('click', helper);
         }
     }
+    //checkCondition();
 }
 
 function disableMoves() {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
-        img[i].removeEventListener('click', handleMove);
+        img[i].removeEventListener('click', helper);
+    }
+    let king = document.getElementsByClassName(playerColor + 'ChessPieceKingCheck')[0];
+    if(typeof king != 'undefined') {
+        king.className = king.className.replace('Check', '');
+    }
+}
+
+function findAttackedPositions() {
+    currentlyAttacked.length = 0;
+
+    let opponentColor;
+    if(playerColor === 'white') {
+        opponentColor = 'black';
+    }
+    else {
+        opponentColor = 'white';
+    }
+    let opponentPieces = document.querySelectorAll('img');
+    //console.log(opponentPieces);
+    for(let i = 0; i < opponentPieces.length; i++) {
+        if(opponentPieces[i].className.includes(opponentColor + 'ChessPiece')) {
+            let piece = opponentPieces[i].className.substr(14);
+            //console.log(opponentPieces[i].className + " attacks: ");
+            handleMove(opponentPieces[i], isValidPosition, true);
+            checkIfCircle();
+        }
+    }
+}
+
+function isValidPosition(param1, param2) {
+    currentlyAttacked[currentlyAttacked.length++] = param1;
+    return true;
+}
+
+function checkCondition() {
+    findAttackedPositions();
+    let king = document.getElementsByClassName(playerColor + 'ChessPieceKing')[0];
+    if(currentlyAttacked.includes(king.parentNode.id)) {
+        king.className += 'Check';
+        inCheck = true;
+        console.log(playerColor + " King is at position: " + king.parentNode.id);
+        console.log("King is attacked: " + currentlyAttacked.includes(king.parentNode.id));
+    }
+    else {
+        inCheck = false;
     }
 }
 
@@ -455,10 +566,10 @@ function setup() {
                 }
                 else {
                     playerColor = 'black';
-                    disableMoves(); //White starts so black cannot move at first
                     createBoard(); //Create the chess board
                     generatePieces(); //Generate the pieces and their eventListeners
                     restrict('white'); //Only enable white chess pieces to be moved
+                    disableMoves(); //White starts so black cannot move at first
                     console.log("You are black!");
                 }
                 break;
@@ -480,7 +591,7 @@ function restrict(disable) {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
         if(img[i].className.includes(disable)) {
-            img[i].removeEventListener('click', handleMove);
+            img[i].removeEventListener('click', helper);
         }
     }
 }
@@ -490,6 +601,15 @@ function moveWasMade(oldC, newC) {
     //Here block the player from making other moves
     //Until opponent moves
 }
+
+/*TODO List of things to fix:
+1. New pawn moves function
+2. New pawn attack positions function
+3. Spawn circle separated from attacked positions functions
+4. Announce check
+5. When in check:
+    - Remove all illegal moves (All moves that leave you in check afterwards)
+ */
 
 function dissconnectSocket() {
     socket.close();

@@ -124,7 +124,7 @@ body {
   height: 12.5%;
 }
 
-.white, .black {
+.white, .black, div[class*="Red"] {
   display: block;
   float: left;
   width: 12.5%;
@@ -139,19 +139,36 @@ body {
   background-color: #ffad94;
 }
 
-img[class^="whiteChessPiece"], img[class^="blackChessPiece"] {
+div[class*="Red"] {
+  background-color: red;
+}
+
+img[class^="whiteChessPiece"], img[class^="blackChessPiece"], img[class*="Check"] {
   padding-top: 5%;
   height: 100%;
   width: 100%;
   cursor: pointer;
 }
 
-img[class*="Attacked"] {
+img[class*="Check"] {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+
+/*
+img[class^="whiteChessPiece"], img[class^="blackChessPiece"]:active {
   padding-top: 5%;
   height: 100%;
   width: 100%;
   cursor: pointer;
-  background-color: red;
+  background-color: rgba(140, 255, 71, 0.5);
+}
+*/
+#active-button {
+  padding-top: 5%;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  background-color:rgba(255, 70, 70, 0.5);
 }
 
 img[class*='Circle'] {
