@@ -2,7 +2,7 @@
 //Replacement with actual functionality will be added later
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('concedeButton').addEventListener('click', function () {
-        dissconnectSocket();
+        disconnectSocket();
         location.href = "/";
     })
 });
@@ -12,6 +12,7 @@ let socket;
 let playerColor;
 let currentlyAttacked = [];
 let inCheck;
+let currentMoves = [];
 
 //-----------Creating the chess board-------------//
 function createBoard() {
@@ -172,15 +173,7 @@ function makeCircle(parent) {
 }
 
 function spawnCircle(spawnPos, parentPos) {
-    let parent = document.getElementById(parentPos).childNodes[0];
-    let parentColor;
-    if(parent.className.includes('white')) {
-        parentColor = 'white';
-    }
-    else {
-        parentColor = 'black';
-    }
-
+    let parentColor = playerColor;
     let square = document.getElementById(spawnPos);
     if(square != null) {
         if(square.hasChildNodes()) {
@@ -220,8 +213,11 @@ function handleMove(obj, res, flag) {
     if(flag == null) {
         flag = false;
     }
+    if(!flag) {
+        currentMoves = [];
+        //console.log("Reset");
+    }
     checkIfCircle();
-    //this.id = 'active-button';
     let color = obj.className.substr(0, 5);
     const posX = obj.parentElement.id.charAt(0);
     const posY = obj.parentElement.id.charAt(1);
@@ -250,69 +246,45 @@ function handleMove(obj, res, flag) {
 }
 
 function showPawnMoves(color, posX, posY, res, flag) {
-    //console.log(flag);
     let thisPos = createPosition(posX, posY, 0, 0);
-    if(color === 'white') {
-        //We need to look above 1 or 2 spaces
-        const nextPos = createPosition(posX, parseInt(posY) , 0, 1);
-        if(!flag && document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
-            spawnCircle(nextPos, thisPos);
-            //Check if in start position
-            if(parseInt(posY) === 2) {
-                //In star position so we can move 2 spaces up
-                const extraPos = createPosition(posX, parseInt(posY), 0, 2);
-                if(!document.getElementById(extraPos).hasChildNodes()) {
-                    spawnCircle(extraPos, thisPos);
-                }
-            }
-        }
+    let offset = 1;
+    if(color === 'black') {
+        offset = -1;
+    }
+    const nextPos = createPosition(posX, parseInt(posY) , 0, offset);
 
-        //Check if pawn can attack
-        let attackPos1 = createPosition(posX, posY, -1, 1);
-        let attackPos2 = createPosition(posX, posY, 1, 1);
-        if(flag) {
-            checkLastPiece(attackPos1, thisPos, res, flag);
-            checkLastPiece(attackPos2, thisPos, res, flag);
+    if (!flag) {
+        if(document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes() && testPosition(nextPos, thisPos)) {
+            currentMoves[currentMoves.length++] = nextPos;
         }
-        else {
-            if(document.getElementById(attackPos1) != null && document.getElementById(attackPos1).hasChildNodes()) {
-                res(attackPos1, thisPos);
-            }
-            if(document.getElementById(attackPos2) != null && document.getElementById(attackPos2).hasChildNodes()){
-                res(attackPos2, thisPos);
-            }
+        //Check if pawn in start position
+        const extraPos = createPosition(posX, parseInt(posY), 0, 2 * offset);
+        if(((color === 'black' && parseInt(posY) === 7) || (color === 'white' && parseInt(posY) === 2)) &&
+            !document.getElementById(extraPos).hasChildNodes() &&
+            testPosition(extraPos, thisPos)) {
+            currentMoves[currentMoves.length++] = extraPos;
         }
     }
 
-    if(color === 'black') {
-        //We look below
-        const nextPos = createPosition(posX, parseInt(posY) , 0, -1);
-        if(!flag && document.getElementById(nextPos) != null && !document.getElementById(nextPos).hasChildNodes()) {
-            spawnCircle(nextPos, thisPos);
-            //Check if in start position
-            if(parseInt(posY) === 7) {
-                //In star position so we can move 2 spaces up
-                const extraPos = createPosition(posX, parseInt(posY), 0, -2);
-                if(!document.getElementById(extraPos).hasChildNodes()) {
-                    spawnCircle(extraPos, thisPos);
-                }
-            }
+    //Check if pawn can attack
+    let attackPos1 = createPosition(posX, posY, -1, offset);
+    let attackPos2 = createPosition(posX, posY, 1, offset);
+    if(flag) {
+        checkLastPiece(attackPos1, thisPos, res, flag);
+        checkLastPiece(attackPos2, thisPos, res, flag);
+    }
+    else {
+        if(document.getElementById(attackPos1) != null && document.getElementById(attackPos1).hasChildNodes() && testPosition(attackPos1, thisPos)) {
+            currentMoves[currentMoves.length++] = attackPos1;
         }
-
-        //Check if pawn can attack
-        let attackPos1 = createPosition(posX, posY, -1, -1);
-        let attackPos2 = createPosition(posX, posY, 1, -1);
-        if(flag) {
-            checkLastPiece(attackPos1, thisPos, res, flag);
-            checkLastPiece(attackPos2, thisPos, res, flag);
+        if(document.getElementById(attackPos2) != null && document.getElementById(attackPos2).hasChildNodes() && testPosition(attackPos2, thisPos)){
+            currentMoves[currentMoves.length++] = attackPos2;
         }
-        else {
-            if(document.getElementById(attackPos1) != null && document.getElementById(attackPos1).hasChildNodes()) {
-                res(attackPos1, thisPos);
-            }
-            if(document.getElementById(attackPos2) != null && document.getElementById(attackPos2).hasChildNodes()){
-                res(attackPos2, thisPos);
-            }
+    }
+    if(!flag) {
+        //console.log(currentMoves);
+        for (let i = 0; i < currentMoves.length; i++) {
+            spawnCircle(currentMoves[i], thisPos);
         }
     }
 }
@@ -330,9 +302,18 @@ function showKnightMoves(posX, posY, res, flag) {
                 checkLastPiece(pos2, thisPos, res, flag);
             }
             else {
-                res(pos1, thisPos);
-                res(pos2, thisPos);
+                if(testPosition(pos1, thisPos)) {
+                    currentMoves[currentMoves.length++] = pos1;
+                }
+                if(testPosition(pos2, thisPos)) {
+                    currentMoves[currentMoves.length++] = pos2;
+                }
             }
+        }
+    }
+    if(!flag) {
+        for (let i = 0; i < currentMoves.length; i++) {
+            spawnCircle(currentMoves[i], thisPos);
         }
     }
 }
@@ -347,16 +328,28 @@ function showBishopMoves(posX, posY, res, flag) {
             let newPos;
             do {
                 newPos = createPosition(posX, posY, k * moves[i], k * moves[j]);
-                if(!spawnCircle(newPos, thisPos)) {
+                //console.log("New pos: " + newPos);
+                if(!positionInGrid(newPos) ||
+                    (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))){
                     //console.log("broke at: " + newPos);
                     break;
                 }
                 else if(flag) {
                     res(newPos, thisPos);
                 }
+                else if(testPosition(newPos, thisPos)){
+                    currentMoves[currentMoves.length++] = newPos;
+                }
                 k++;
-            } while (document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 10);
-            checkLastPiece(newPos, thisPos, res, flag);
+            } while (document.getElementById(newPos) != null && !document.getElementById(newPos).hasChildNodes());
+            if(flag) {
+                checkLastPiece(newPos, thisPos, res, flag);
+            }
+        }
+    }
+    if(!flag) {
+        for (let i = 0; i < currentMoves.length; i++) {
+            spawnCircle(currentMoves[i], thisPos);
         }
     }
 }
@@ -370,30 +363,47 @@ function showRookMoves(posX, posY, res, flag) {
         do {
             newPos = createPosition(posX, posY, k * moves[i], 0);
             //console.log("pos: " + newPos);
-            if(!spawnCircle(newPos, thisPos)) {
+            if(!positionInGrid(newPos) ||
+                (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
                 //console.log("broke");
                 break;
             }
             else if(flag) {
                 res(newPos, thisPos);
             }
+            else if(testPosition(newPos, thisPos)){
+                currentMoves[currentMoves.length++] = newPos;
+            }
             k++;
-        } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
-        checkLastPiece(newPos, thisPos, res, flag);
+        } while(document.getElementById(newPos) != null && !document.getElementById(newPos).hasChildNodes() && k < 9);
+        if(flag) {
+            checkLastPiece(newPos, thisPos, res, flag);
+        }
         k = 1;
         do {
             newPos = createPosition(posX, posY, 0, k * moves[i]);
             //console.log("pos: " + newPos);
-            if(!spawnCircle(newPos, thisPos)) {
+            if(!positionInGrid(newPos) ||
+                (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
                 //console.log("broke");
                 break;
             }
             else if(flag) {
                 res(newPos, thisPos);
             }
+            else if(testPosition(newPos, thisPos)){
+                currentMoves[currentMoves.length++] = newPos;
+            }
             k++;
-        } while(document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes() && k < 9);
-        checkLastPiece(newPos, thisPos, res, flag);
+        } while(document.getElementById(newPos) != null && !document.getElementById(newPos).hasChildNodes() && k < 9);
+        if(flag) {
+            checkLastPiece(newPos, thisPos, res, flag);
+        }
+    }
+    if(!flag) {
+        for (let i = 0; i < currentMoves.length; i++) {
+            spawnCircle(currentMoves[i], thisPos);
+        }
     }
 }
 
@@ -411,9 +421,14 @@ function showKingMoves(posX, posY, res, flag) {
             if(flag) {
                checkLastPiece(newPos, thisPos, res, flag);
             }
-            else {
-                res(newPos, thisPos);
+            else if(testPosition(newPos, thisPos)){
+                currentMoves[currentMoves.length++] = newPos;
             }
+        }
+    }
+    if(!flag) {
+        for (let i = 0; i < currentMoves.length; i++) {
+            spawnCircle(currentMoves[i], thisPos);
         }
     }
 }
@@ -462,7 +477,7 @@ function makeOpponentMove(data) {
     }
     document.getElementById(newPos).appendChild(piece);
     enableMoves();
-    checkCondition();
+    inCheck = checkCondition();
 }
 
 function takePiece() {
@@ -529,15 +544,63 @@ function isValidPosition(param1, param2) {
 function checkCondition() {
     findAttackedPositions();
     let king = document.getElementsByClassName(playerColor + 'ChessPieceKing')[0];
-    if(currentlyAttacked.includes(king.parentNode.id)) {
-        king.className += 'Check';
-        inCheck = true;
-        console.log(playerColor + " King is at position: " + king.parentNode.id);
-        console.log("King is attacked: " + currentlyAttacked.includes(king.parentNode.id));
+    if(typeof king == 'undefined') {
+        king = document.getElementsByClassName(playerColor + 'ChessPieceKingCheck')[0];
+        //console.log("undefined");
+    }
+    //console.log(king);
+    let kingPos = king.parentNode.id;
+    if(currentlyAttacked.includes(kingPos)) {
+        if(!king.className.includes('Check')) {
+            king.className += 'Check';
+        }
+        //console.log(playerColor + " King is at position: " + king.parentNode.id);
+        //console.log("King is attacked by " + findNrOfAttackers(kingPos) + " pieces.");
+        return true;
     }
     else {
-        inCheck = false;
+        return false;
     }
+}
+
+function testPosition(pos, parentPos) {
+    if(document.getElementById(pos) == null) {
+        return false;
+    }
+    let parent = document.getElementById(parentPos).childNodes[0];
+    parent.parentNode.removeChild(parent); //Removing the piece from its initial position
+    //Simulating the take piece if the position attacks another piece
+    let opponentPiece = null;
+    if(document.getElementById(pos).hasChildNodes() && !document.getElementById(pos).childNodes[0].className.includes(playerColor)) {
+        opponentPiece = document.getElementById(pos).childNodes[0];
+        document.getElementById(pos).removeChild(opponentPiece);
+    }
+    document.getElementById(pos).appendChild(parent); //Moving it to the testing position
+    let valid = !checkCondition();
+    //console.log("Testing position: " + pos + " and valid is " + valid);
+    document.getElementById(pos).removeChild(parent); //Removing piece from test position
+    document.getElementById(parentPos).appendChild(parent); //Placing piece back in its original position
+
+    let king = document.getElementsByClassName(playerColor + 'ChessPieceKingCheck')[0];
+    if(typeof king != 'undefined' && !inCheck) {
+        king.className = king.className.replace('Check', '');
+    }
+    if(opponentPiece != null) {
+        document.getElementById(pos).appendChild(opponentPiece);
+    }
+    return valid;
+}
+
+function positionInGrid(pos) {
+    let posX = pos.substr(0, 1);
+    let posY = pos.substr(1, 1);
+    if(posX.charCodeAt(0) < 97 || posX.charCodeAt(0) > 104) {
+        return false;
+    }
+    if(parseInt(posY) < 1 || parseInt(posY) > 8) {
+        return false;
+    }
+    return true;
 }
 
 //Sets up the websocket when a user enters game.html
@@ -611,6 +674,6 @@ function moveWasMade(oldC, newC) {
     - Remove all illegal moves (All moves that leave you in check afterwards)
  */
 
-function dissconnectSocket() {
+function disconnectSocket() {
     socket.close();
 }
