@@ -489,6 +489,7 @@ function makeOpponentMove(data) {
             console.log("MATE!");
         }
     }
+    checkIfCircle();
 }
 
 function takePiece() {
