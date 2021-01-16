@@ -155,6 +155,12 @@ function helper() {
     handleMove(this, spawnCircle);
 }
 
+function removeCircle() {
+    checkIfCircle();
+    this.removeEventListener('click', removeCircle);
+    this.addEventListener('click', helper);
+}
+
 function createPosition(posX, posY, offsetX, offsetY) {
     let newX = posX;
     let newY = posY;
@@ -219,6 +225,13 @@ function handleMove(obj, res, flag) {
     }
     if(!flag) {
         currentMoves = [];
+        let img = document.querySelectorAll('img');
+        for(let i = 0; i < img.length; i++) {
+            img[i].removeEventListener('click', removeCircle);
+            img[i].addEventListener('click', helper);
+        }
+        obj.removeEventListener('click', helper);
+        obj.addEventListener('click', removeCircle);
     }
     checkIfCircle();
     let color = obj.className.substr(0, 5);
@@ -595,6 +608,7 @@ function makeOpponentMove(data) {
 
     let piece = document.getElementById(oldPos).childNodes[0];
     piece.parentElement.removeChild(piece);
+    //console.log(piece);
 
     while(document.getElementById(newPos).hasChildNodes()) {
         document.getElementById(newPos).removeChild(document.getElementById(newPos).childNodes[0]);
@@ -858,3 +872,8 @@ function logMove(oldC, newC, playerColor) {
     }
     log.appendChild(newDiv);
 }
+
+/*TODO list:
+* Waiting for player to connect
+*
+* */
