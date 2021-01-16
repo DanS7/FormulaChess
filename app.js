@@ -12,7 +12,9 @@ const port = process.argv[2]; //The port
 app.get("/", (req, res) => {
     res.render("splash.ejs", {
         gamesPlayed: playedGames,
-        players: playersInGame
+        players: playersInGame,
+        gamesWonByWhite: gamesWonByWhite,
+        gamesWonByBlack: gamesWonByBlack
     });
 });
 app.use(express.static(__dirname + "/public"));
@@ -54,6 +56,12 @@ let playedGames = 0;
 //Number of players currently in a match
 let playersInGame = 0;
 
+//Number of games won by black
+let gamesWonByBlack = 0;
+
+//Number of games won by white
+let gamesWonByWhite = 0;
+
 //When a ws(user) connects to wss(our server):
 wss.on("connection", function (ws) {
     connectionID++;
@@ -65,13 +73,13 @@ wss.on("connection", function (ws) {
         //keep track of which client is connected to which game instance
         webSocketToGame[connectionID] = currentGame; //connectionID determines game
         currentGame.addPlayer(ws); //add the first user to our new game
-        console.log("New game instance"); //for dev
+        //console.log("New game instance"); //for dev
     }
     else {
         webSocketToGame[connectionID] = gameInstances[gameID];
         currentGame.addPlayer(ws);
         gameID++;
-        console.log("Second player added, start game!");
+        //console.log("Second player added, start game!");
         currentGame.userColor();
     }
     ws.on('message', function incoming(event) { //when a message comes from a user
@@ -79,10 +87,16 @@ wss.on("connection", function (ws) {
         let gameInstance = webSocketToGame[index]; //identify corresponding game instance
         let opponent = gameInstance.getOpponentSocket(ws); //get opponent socket
         let message; //message that will be transmitted to client
-        console.log(event);
+        //console.log(event);
         if(event === "MATE") {
             message = messages.O_GAME_WON_BY;
             message.data = gameInstance.getColorOfOpponent(ws);
+            if(message.data === "white") {
+                gamesWonByWhite++;
+            }
+            else {
+                gamesWonByBlack++;
+            }
             opponent.send(JSON.stringify(message));
             ws.send(JSON.stringify(message));
         }
