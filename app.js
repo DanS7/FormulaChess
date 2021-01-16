@@ -78,9 +78,19 @@ wss.on("connection", function (ws) {
         let index = websockets.indexOf(ws); //identify our user id
         let gameInstance = webSocketToGame[index]; //identify corresponding game instance
         let opponent = gameInstance.getOpponentSocket(ws); //get opponent socket
-        let message = messages.O_MOVE; //message is a move object
-        message.data = event; //
-        opponent.send(JSON.stringify(message)); //send move to opponent socket
+        let message; //message that will be transmitted to client
+        console.log(event);
+        if(event === "MATE") {
+            message = messages.O_GAME_WON_BY;
+            message.data = gameInstance.getColorOfOpponent(ws);
+            opponent.send(JSON.stringify(message));
+            ws.send(JSON.stringify(message));
+        }
+        else {
+            message = messages.O_MOVE; //message is a move object
+            message.data = event; //
+            opponent.send(JSON.stringify(message)); //send move to opponent socket
+        }
     })
     console.log(webSocketToGame[connectionID] !== undefined);
 

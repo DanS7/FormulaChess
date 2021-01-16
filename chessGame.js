@@ -95,4 +95,11 @@ game.prototype.getOpponentSocket = function (ws) {
     return this.white;
 }
 
+game.prototype.getColorOfOpponent = function (ws) {
+    if(ws === this.white) {
+        return "black";
+    }
+    return "white";
+}
+
 module.exports = game;

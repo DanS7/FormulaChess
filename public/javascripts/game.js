@@ -524,6 +524,7 @@ function makeOpponentMove(data) {
     inCheck = checkCondition();
     if(inCheck) {
         if(checkMate()) {
+            socket.send("MATE");
             console.log("MATE!");
         }
     }
@@ -696,7 +697,7 @@ function setup() {
         socket.send("bye bye"); //helps the dev
     };
     socket.onmessage = function (event) {
-        //console.log(event.data); //helps the dev
+        console.log(event.data); //helps the dev
         let message = JSON.parse(event.data);
         switch (message.type) {
             case "PLAYER-TYPE":
@@ -725,6 +726,19 @@ function setup() {
                 //TODO: YOU WIN MESSAGE
                 window.location.replace("http://localhost:3000");
                 socket.close();
+                break;
+            case "GAME-WON-BY":
+                if(message.data === playerColor) {
+                    console.log("YOU WON!");
+                }
+                else {
+                    console.log("YOU LOST!")
+                }
+                const delayInMilliSeconds = 5000;
+                setTimeout(function () {
+                    window.location.replace("http://localhost:3000");
+                    socket.close();
+                }, delayInMilliSeconds);
                 break;
         }
     }
