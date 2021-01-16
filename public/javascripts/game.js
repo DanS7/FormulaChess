@@ -697,7 +697,6 @@ function setup() {
         socket.send("bye bye"); //helps the dev
     };
     socket.onmessage = function (event) {
-        console.log(event.data); //helps the dev
         let message = JSON.parse(event.data);
         switch (message.type) {
             case "PLAYER-TYPE":
