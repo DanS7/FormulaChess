@@ -528,6 +528,14 @@ function makeOpponentMove(data) {
         }
     }
     checkIfCircle();
+    let opponentColor;
+    if(playerColor === "white") {
+        opponentColor = "black";
+    }
+    else {
+        opponentColor = "white";
+    }
+    logMove(oldPos, newPos, opponentColor);
 }
 
 function takePiece() {
@@ -732,6 +740,7 @@ function restrict(disable) {
 }
 
 function moveWasMade(oldC, newC) {
+    logMove(oldC, newC, playerColor);
     socket.send(oldC + newC);
     //Here block the player from making other moves
     //Until opponent moves
@@ -739,4 +748,20 @@ function moveWasMade(oldC, newC) {
 
 function disconnectSocket() {
     socket.close();
+}
+
+function logMove(oldC, newC, playerColor) {
+    let log = document.getElementById("moveLog");
+    const newDiv = document.createElement("div");
+    newDiv.className = "oneMove";
+    newDiv.textContent += oldC + " - " + newC;
+    if(playerColor === "white") {
+        newDiv.style.background = "white";
+        newDiv.style.color = "black";
+    }
+    else {
+        newDiv.style.background = "black";
+        newDiv.style.color = "white";
+    }
+    log.appendChild(newDiv);
 }

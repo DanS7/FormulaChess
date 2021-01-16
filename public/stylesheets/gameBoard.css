@@ -179,3 +179,29 @@ img[class*='Circle'] {
   opacity: 50%;
   cursor: pointer;
 }
+
+#moveLog {
+  position: relative;
+  margin-top: 30%;
+  height: 50%;
+  width: 50%;
+  margin-left: 40%;
+  border: 2px solid black;
+  text-align: center;
+  overflow-y: scroll;
+  background-color: darkgrey;
+}
+
+.oneMove {
+  float: top;
+  position: relative;
+  height: 5%;
+}
+
+#moveLogText {
+  font-family: fantasy;
+  border-bottom: 3px solid black;
+  overflow: hidden;
+  margin: 2px 0 0 0;
+  font-size: large;
+}
