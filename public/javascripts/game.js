@@ -215,12 +215,16 @@ function handleMove(obj, res, flag) {
     }
     if(!flag) {
         currentMoves = [];
-        //console.log("Reset");
     }
     checkIfCircle();
     let color = obj.className.substr(0, 5);
     const posX = obj.parentElement.id.charAt(0);
     const posY = obj.parentElement.id.charAt(1);
+
+    if(!flag) {
+        //console.log(createPosition(posX, posY, 0, 0));
+    }
+
     const type = obj.className.replace('whiteChessPiece', '').replace('blackChessPiece', '').replace('Check', '');
     switch (type) {
         case('Pawn'):
@@ -417,26 +421,60 @@ function showQueenMoves(posX, posY, res, flag) {
 function showKingMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     let moves = [-1, 0, 1];
+    if(!flag) {
+        console.log(thisPos);
+    }
     for(let i = 0; i < moves.length; i++) {
         for(let j = 0; j < moves.length; j++) {
             let newPos = createPosition(posX, posY, moves[i], moves[j]);
-            if(!positionInGrid(newPos) ||
-                (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
-                continue;
-            }
-            if(flag) {
-               checkLastPiece(newPos, thisPos, res, flag);
-            }
-            else if(testPosition(newPos, thisPos)){
-                currentMoves[currentMoves.length++] = newPos;
+            //console.log(newPos);
+            if(positionInGrid(newPos)) {
+                if(!document.getElementById(newPos).hasChildNodes() ||
+                    (document.getElementById(newPos).hasChildNodes() &&
+                    !document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
+                    if(!flag) {
+                        console.log(newPos + " and attackedByKing: " + attackedByKing(newPos));
+                    }
+                    if(!flag && testPosition(newPos, thisPos) && !attackedByKing(newPos)) {
+                        console.log("King can move at: " + newPos);
+                        currentMoves[currentMoves.length++] = newPos;
+                    }
+                    if(flag) {
+                        res(newPos, thisPos);
+                    }
+                }
             }
         }
     }
     if(!flag) {
+        console.log(currentMoves);
         for (let i = 0; i < currentMoves.length; i++) {
             spawnCircle(currentMoves[i], thisPos);
         }
     }
+}
+
+function attackedByKing(pos) {
+    let opponentColor;
+    if(playerColor === 'white') {
+        opponentColor = 'black';
+    }
+    else {
+        opponentColor = 'white';
+    }
+    let king = document.getElementsByClassName(opponentColor + 'ChessPieceKing')[0];
+    console.log(king);
+    let kingPos = king.parentNode.id;
+    let attacked = [];
+    let moves = [-1, 0, 1];
+    for(let i = 0; i < moves.length; i++) {
+        for(let j = 0; j < moves.length; j++) {
+            attacked[attacked.length++] = createPosition(kingPos.substr(0, 1), kingPos.substr(1, 1), moves[i], moves[j]);
+        }
+    }
+    console.log(attacked);
+    return attacked.includes(pos);
+
 }
 
 function checkLastPiece(newPos, thisPos, res, flag) {
@@ -540,8 +578,7 @@ function findAttackedPositions() {
     //console.log(opponentPieces);
     for(let i = 0; i < opponentPieces.length; i++) {
         if(opponentPieces[i].className.includes(opponentColor + 'ChessPiece')) {
-            let piece = opponentPieces[i].className.substr(14);
-            //console.log(opponentPieces[i].className + " attacks: ");
+            //console.log(opponentPieces[i]);
             handleMove(opponentPieces[i], isValidPosition, true);
             checkIfCircle();
         }
@@ -549,6 +586,7 @@ function findAttackedPositions() {
 }
 
 function isValidPosition(param1, param2) {
+    //console.log(param1);
     currentlyAttacked[currentlyAttacked.length++] = param1;
     return true;
 }
@@ -561,6 +599,7 @@ function checkCondition() {
         //console.log("undefined");
     }
     //console.log(king);
+    //console.log(currentlyAttacked);
     let kingPos = king.parentNode.id;
     if(currentlyAttacked.includes(kingPos)) {
         if(!king.className.includes('Check')) {
@@ -599,6 +638,8 @@ function testPosition(pos, parentPos) {
         return false;
     }
     let parent = document.getElementById(parentPos).childNodes[0];
+    //parent.className = document.getElementById(parentPos).childNodes[0].className;
+    //console.log(parent);
     parent.parentNode.removeChild(parent); //Removing the piece from its initial position
     //Simulating the take piece if the position attacks another piece
     let opponentPiece = null;
@@ -607,6 +648,7 @@ function testPosition(pos, parentPos) {
         document.getElementById(pos).removeChild(opponentPiece);
     }
     document.getElementById(pos).appendChild(parent); //Moving it to the testing position
+    //console.log(document.getElementById(pos));
     let valid = !checkCondition();
     //console.log("Testing position: " + pos + " and valid is " + valid);
     document.getElementById(pos).removeChild(parent); //Removing piece from test position
@@ -647,7 +689,6 @@ function setup() {
     };
     socket.onmessage = function (event) {
         //console.log(event.data); //helps the dev
-        //TODO Here u should make some javascript and transmit the move to the front-end
         let message = JSON.parse(event.data);
         switch (message.type) {
             case "PLAYER-TYPE":
@@ -695,15 +736,6 @@ function moveWasMade(oldC, newC) {
     //Here block the player from making other moves
     //Until opponent moves
 }
-
-/*TODO List of things to fix:
-1. New pawn moves function
-2. New pawn attack positions function
-3. Spawn circle separated from attacked positions functions
-4. Announce check
-5. When in check:
-    - Remove all illegal moves (All moves that leave you in check afterwards)
- */
 
 function disconnectSocket() {
     socket.close();
