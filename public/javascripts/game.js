@@ -13,6 +13,10 @@ let playerColor;
 let currentlyAttacked = [];
 let inCheck;
 let currentMoves = [];
+let kingMoved = false;
+let leftRookMoved = false;      // a1, h8
+let rightRookMoved = false;     // a8, h1
+let castling = false;
 
 //-----------Creating the chess board-------------//
 function createBoard() {
@@ -360,6 +364,12 @@ function showBishopMoves(posX, posY, res, flag) {
 
 function showRookMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
+    if(!flag && (thisPos === 'a1' || thisPos === 'h8')) {
+        leftRookMoved = true;
+    }
+    if(!flag && (thisPos === 'a8' || thisPos === 'h1')) {
+        rightRookMoved = true;
+    }
     let moves = [-1, 1];
     for(let i = 0; i < moves.length; i++) {
         let newPos;
@@ -421,9 +431,6 @@ function showQueenMoves(posX, posY, res, flag) {
 function showKingMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     let moves = [-1, 0, 1];
-    if(!flag) {
-        console.log(thisPos);
-    }
     for(let i = 0; i < moves.length; i++) {
         for(let j = 0; j < moves.length; j++) {
             let newPos = createPosition(posX, posY, moves[i], moves[j]);
@@ -433,10 +440,10 @@ function showKingMoves(posX, posY, res, flag) {
                     (document.getElementById(newPos).hasChildNodes() &&
                     !document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
                     if(!flag) {
-                        console.log(newPos + " and attackedByKing: " + attackedByKing(newPos));
+                        //console.log(newPos + " and attackedByKing: " + attackedByKing(newPos));
                     }
                     if(!flag && testPosition(newPos, thisPos) && !attackedByKing(newPos)) {
-                        console.log("King can move at: " + newPos);
+                        //console.log("King can move at: " + newPos);
                         currentMoves[currentMoves.length++] = newPos;
                     }
                     if(flag) {
@@ -446,10 +453,47 @@ function showKingMoves(posX, posY, res, flag) {
             }
         }
     }
+
+    //Check for castling
+    if(!kingMoved && !flag) {
+        //Look for rook to the left and right
+        //Looking to the left first
+        if(!leftRookMoved) {
+            checkCastling(posX, posY, -1);
+        }
+        if(!rightRookMoved) {
+            checkCastling(posX, posY, 1);
+        }
+    }
+
     if(!flag) {
-        console.log(currentMoves);
+        //console.log(currentMoves);
         for (let i = 0; i < currentMoves.length; i++) {
             spawnCircle(currentMoves[i], thisPos);
+        }
+    }
+}
+
+function checkCastling(posX, posY, offset) {
+    let k = offset;
+    let newPos = createPosition(posX, posY, k, 0);
+    while (positionInGrid(newPos) && !document.getElementById(newPos).hasChildNodes()) {
+        k += offset;
+        newPos = createPosition(posX, posY, k, 0);
+    }
+    //Found a square to the left that has a piece on it
+    //Or we are out of the grid
+    //If we are still on the board -> We need to check if the piece is our rook
+    if (positionInGrid(newPos) && document.getElementById(newPos).childNodes[0].className.includes('Rook')) {
+        //Castling to the left available
+        let kingPos = createPosition(posX, posY, 2 * offset, 0);   //Position of king after castling
+        let rookPos = createPosition(posX, posY, offset, 0);
+        //We need to check if kingPos and rookPos are not attacked
+        findAttackedPositions();
+        if(currentMoves.includes(rookPos) && !currentlyAttacked.includes(kingPos)) {
+            currentMoves[currentMoves.length++] = kingPos;
+            //console.log("Castling available");
+            castling = true;
         }
     }
 }
@@ -463,7 +507,7 @@ function attackedByKing(pos) {
         opponentColor = 'white';
     }
     let king = document.getElementsByClassName(opponentColor + 'ChessPieceKing')[0];
-    console.log(king);
+    //console.log(king);
     let kingPos = king.parentNode.id;
     let attacked = [];
     let moves = [-1, 0, 1];
@@ -472,7 +516,7 @@ function attackedByKing(pos) {
             attacked[attacked.length++] = createPosition(kingPos.substr(0, 1), kingPos.substr(1, 1), moves[i], moves[j]);
         }
     }
-    console.log(attacked);
+    //console.log(attacked);
     return attacked.includes(pos);
 
 }
@@ -497,13 +541,49 @@ function makeMove() {
     checkIfCircle();
     //Remove object from old position
     let piece = document.getElementById(oldCoords).childNodes[0];
+    if(piece.className.includes('King')) {
+        //console.log("King moved!");
+        kingMoved = true;
+    }
     document.getElementById(oldCoords).removeChild(piece);
     //Add it to the new position
     document.getElementById(newCoords).appendChild(piece);
 
+    //Check if we castled and move rook if we did
+    piece = document.getElementById(newCoords).childNodes[0];
+    if(piece.className.includes('King') && castling === true) {
+        //console.log("Castling...");
+        //We need to move the rook
+        if(newCoords === 'c1') {
+            let rook = document.getElementById('a1').childNodes[0];
+            rook.parentNode.removeChild(rook);
+            document.getElementById('d1').appendChild(rook);
+            moveWasMade('a1', 'd1');
+        }
+        else if(newCoords === 'g1') {
+            let rook = document.getElementById('h1').childNodes[0];
+            rook.parentNode.removeChild(rook);
+            document.getElementById('f1').appendChild(rook);
+            moveWasMade('h1', 'f1');
+        }
+        else if(newCoords === 'g8') {
+            let rook = document.getElementById('h8').childNodes[0];
+            rook.parentNode.removeChild(rook);
+            document.getElementById('f8').appendChild(rook);
+            moveWasMade('h8', 'f8');
+        }
+        else if(newCoords === 'c8') {
+            let rook = document.getElementById('a8').childNodes[0];
+            rook.parentNode.removeChild(rook);
+            document.getElementById('d8').appendChild(rook);
+            moveWasMade('a8', 'd8');
+        }
+    }
+
     disableMoves();
 
     moveWasMade(oldCoords, newCoords);
+
     //Coordinates work, Dan needs to look how to interpret them
     //coordinates format: "d1d2", "e4a1", etc.
     //format: initialPosition + finalPosition
