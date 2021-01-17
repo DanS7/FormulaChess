@@ -662,6 +662,7 @@ function disableMoves() {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
         img[i].removeEventListener('click', helper);
+        img[i].removeEventListener('click', removeCircle);
     }
     let king = document.getElementsByClassName(playerColor + 'ChessPieceKingCheck')[0];
     if(typeof king != 'undefined') {
