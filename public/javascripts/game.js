@@ -227,8 +227,10 @@ function handleMove(obj, res, flag) {
         currentMoves = [];
         let img = document.querySelectorAll('img');
         for(let i = 0; i < img.length; i++) {
-            img[i].removeEventListener('click', removeCircle);
-            img[i].addEventListener('click', helper);
+            if(img[i].className.includes(playerColor + 'ChessPiece')) {
+                img[i].removeEventListener('click', removeCircle);
+                img[i].addEventListener('click', helper);
+            }
         }
         obj.removeEventListener('click', helper);
         obj.addEventListener('click', removeCircle);
@@ -874,6 +876,6 @@ function logMove(oldC, newC, playerColor) {
 }
 
 /*TODO list:
-* Waiting for player to connect
-*
+* Waiting for player to connect + animation
+* Play button animation
 * */
