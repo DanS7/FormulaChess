@@ -223,8 +223,29 @@ img[class*='Circle'] {
   height: 20%;
   left: 30%;
   width: 40%;
-  background-color: #b3d4fc;
+  background-color: gold;
   border: 2px solid black;
   z-index: 1000;
-  font-size: 30%;
+  font-family: fantasy;
+  text-align: center;
+}
+
+#loosePopUp {
+  position: fixed;
+  top: 40%;
+  height: 20%;
+  left: 30%;
+  width: 40%;
+  background-color: darkred;
+  border: 2px solid black;
+  z-index: 1000;
+  text-align: center;
+  font-family: fantasy;
+}
+
+#popUpStatus {
+  position: relative;
+  height: 50%;
+  top: 25%;
+  font-size: xxx-large;
 }

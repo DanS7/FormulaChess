@@ -827,17 +827,19 @@ function setup() {
                 let opaqueScreen = document.createElement("div");
                 opaqueScreen.setAttribute("id", "opaque");
                 document.getElementsByTagName("body")[0].appendChild(opaqueScreen);
-                let popUp;
+                let popUp = document.createElement("div");
+                let popUpStatus = document.createElement("div");
+                popUpStatus.setAttribute("id", "popUpStatus");
                 if(message.data === playerColor) {
-                    popUp = document.createElement("div");
                     popUp.setAttribute("id", "winPopUp");
-                    popUp.textContent = "You Won!";
-                    document.getElementsByTagName("body")[0].appendChild(popUp);
-                    console.log("YOU WON!");
+                    popUpStatus.textContent = "YOU WON!";
                 }
                 else {
-                    console.log("YOU LOST!")
+                    popUp.setAttribute("id", "loosePopUp");
+                    popUpStatus.textContent = "YOU LOST :("
                 }
+                popUp.appendChild(popUpStatus);
+                document.getElementsByTagName("body")[0].appendChild(popUp);
                 const delayInMilliSeconds = 5000;
                 setTimeout(function () {
                     window.location.replace("http://localhost:3000");
