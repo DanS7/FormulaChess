@@ -249,3 +249,8 @@ img[class*='Circle'] {
   top: 25%;
   font-size: xxx-large;
 }
+
+.deadPiece {
+  width: 25%;
+  height: 25%;
+}

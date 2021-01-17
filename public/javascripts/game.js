@@ -607,16 +607,24 @@ function makeMove() {
 function makeOpponentMove(data) {
     let oldPos = data.substr(0, 2);
     let newPos = data.substr(2, 2);
-
+    let deadPiece;
     let piece = document.getElementById(oldPos).childNodes[0];
     piece.parentElement.removeChild(piece);
     //console.log(piece);
 
+    if(document.getElementById(newPos).hasChildNodes()) {
+        deadPiece = document.getElementById(newPos).childNodes[0];
+    }
     while(document.getElementById(newPos).hasChildNodes()) {
         document.getElementById(newPos).removeChild(document.getElementById(newPos).childNodes[0]);
     }
     document.getElementById(newPos).appendChild(piece);
     enableMoves();
+    if(deadPiece !== undefined) {
+        console.log("MADE IT!");
+        addDeadPiece(deadPiece.className
+        );
+    }
     inCheck = checkCondition();
     if(inCheck) {
         if(checkMate()) {
@@ -642,10 +650,10 @@ function takePiece() {
     let takenPiece = document.getElementById(newPos).childNodes[0];
     document.getElementById(newPos).removeChild(takenPiece);
     document.getElementById(newPos).appendChild(takerPiece);
-
     checkIfCircle();
     disableMoves();
     moveWasMade(oldPos, newPos);
+    addDeadPiece(takenPiece.className);
 }
 
 function enableMoves() {
@@ -799,6 +807,8 @@ function setup() {
             case "PLAYER-TYPE":
                 if(message.data === 'White') {
                     playerColor = 'white';
+                    document.getElementsByClassName("userCaptures")[0].style.background = "white";
+                    document.getElementsByClassName("opponentCaptures")[0].style.background = "grey";
                     createBoard(); //Create the chess board
                     generatePieces(); //Generate the pieces and their eventListeners
                     restrict('black'); //Only enable black chess pieces to be moved
@@ -806,6 +816,8 @@ function setup() {
                 }
                 else {
                     playerColor = 'black';
+                    document.getElementsByClassName("userCaptures")[0].style.background = "grey";
+                    document.getElementsByClassName("opponentCaptures")[0].style.background = "white";
                     createBoard(); //Create the chess board
                     generatePieces(); //Generate the pieces and their eventListeners
                     restrict('white'); //Only enable white chess pieces to be moved
@@ -886,6 +898,50 @@ function logMove(oldC, newC, playerColor) {
     log.appendChild(newDiv);
 }
 
+
+function addDeadPiece(deadPiece) {
+    let color;
+    const pieceName = checkForPieceName(deadPiece);
+    let dirname;
+    if(deadPiece.includes("white")) {
+        color = "White";
+        dirname = "White Pieces";
+
+    }
+    else {
+        color = "Black";
+        dirname = "Black Pieces";
+    }
+    const pngName = pieceName + "_" + color;
+    let image = document.createElement("img");
+    image.src = "images/" + dirname + "/" + pngName + ".png";
+    image.className = "deadPiece";
+    if(playerColor === color.toLowerCase()) {
+        document.getElementsByClassName("opponentCaptures")[0].appendChild(image);
+    }
+    else {
+        document.getElementsByClassName("userCaptures")[0].appendChild(image);
+    }
+}
+
+function checkForPieceName(piece) {
+
+    if(piece.includes("Pawn")) {
+        return "Pawn";
+    }
+    if(piece.includes("Bishop")) {
+        return "Bishop";
+    }
+    if(piece.includes("Knight")) {
+        return "Knight";
+    }
+    if(piece.includes("Rook")) {
+        return "Rook";
+    }
+    if(piece.includes("Queen")) {
+        return "Queen";
+    }
+}
 /*TODO list:
 * Waiting for player to connect + animation
 * Play button animation
