@@ -821,7 +821,15 @@ function setup() {
                 socket.close();
                 break;
             case "GAME-WON-BY":
+                let opaqueScreen = document.createElement("div");
+                opaqueScreen.setAttribute("id", "opaque");
+                document.getElementsByTagName("body")[0].appendChild(opaqueScreen);
+                let popUp;
                 if(message.data === playerColor) {
+                    popUp = document.createElement("div");
+                    popUp.setAttribute("id", "winPopUp");
+                    popUp.textContent = "You Won!";
+                    document.getElementsByTagName("body")[0].appendChild(popUp);
                     console.log("YOU WON!");
                 }
                 else {

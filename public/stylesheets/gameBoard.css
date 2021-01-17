@@ -205,3 +205,26 @@ img[class*='Circle'] {
   margin: 2px 0 0 0;
   font-size: large;
 }
+
+#opaque {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background-color: black;
+  opacity: 0.3;
+}
+
+#winPopUp {
+  position: fixed;
+  top: 40%;
+  height: 20%;
+  left: 30%;
+  width: 40%;
+  background-color: #b3d4fc;
+  border: 2px solid black;
+  z-index: 1000;
+  font-size: 30%;
+}
