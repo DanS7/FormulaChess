@@ -20,7 +20,10 @@ let castling = false;
 
 //-----------Creating the chess board-------------//
 function createBoard() {
-    const container = document.getElementById("board");
+    let container = document.getElementById("board");
+    let waitMessage = container.childNodes[0];
+    container.removeChild(waitMessage);
+    container.removeChild(container.childNodes[0]);
     if(playerColor === 'white') {
         for (let i = 0; i < 8; i++) {
             const row = createRow(i);

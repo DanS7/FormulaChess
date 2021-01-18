@@ -206,6 +206,91 @@ img[class*='Circle'] {
   font-size: large;
 }
 
+
+
+.message {
+  font-family: fantasy;
+  font-size: 20px;
+  text-align: center;
+  vertical-align: middle;
+  padding-top: 20vmin;
+}
+
+.anim {
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+  display: flex;
+  padding: 75px 100px 50px 20%;
+  margin: auto;
+}
+
+.anim img {
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin: 0 5px;
+
+}
+/*
+.loader span:nth-child(2) {
+  background: #f07e6e;
+}
+
+.loader span:nth-child(3) {
+  background: #84cdfa;
+}
+
+.loader span:nth-child(4) {
+  background: #5ad1cd;
+}
+*/
+
+.anim img:not(:last-child) {
+  animation: animate 2.9s linear infinite;
+}
+
+@keyframes animate {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(60px);
+  }
+}
+
+.anim img:last-child {
+  animation: jump 2.9s ease-in-out infinite;
+}
+
+@keyframes jump {
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(10px, -10px);
+  }
+  20% {
+    transform: translate(20px, 10px);
+  }
+  30% {
+    transform: translate(30px, -50px);
+  }
+  70% {
+    transform: translate(-270px, -50px);
+  }
+  80% {
+    transform: translate(-260px, 10px);
+  }
+  90% {
+    transform: translate(-250px, -10px);
+  }
+  100% {
+    transform: translate(-240px, 0);
+  }
+}
+
 #opaque {
   position: fixed;
   top: 0;
