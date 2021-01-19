@@ -882,7 +882,7 @@ function moveWasMade(oldC, newC) {
 }
 
 function disconnectSocket() {
-    socket.close();
+    socket.close(4001); //4001 is the code for a game aborted state
 }
 
 function logMove(oldC, newC, playerColor) {

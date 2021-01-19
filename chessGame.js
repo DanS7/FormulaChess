@@ -102,4 +102,11 @@ game.prototype.getColorOfOpponent = function (ws) {
     return "white";
 }
 
+game.prototype.getColor = function (ws) {
+    if(ws === this.white) {
+        return "white";
+    }
+    return "black";
+}
+
 module.exports = game;

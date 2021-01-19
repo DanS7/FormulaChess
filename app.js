@@ -67,15 +67,14 @@ wss.on("connection", function (ws) {
     connectionID++;
     playersInGame++;
     websockets[connectionID] = ws; //put new user socket in array
-    if(gameInstances[gameID] === undefined) { //if first user in game
+    if (gameInstances[gameID] === undefined) { //if first user in game
         gameInstances[gameID] = new Game(gameID); //create new game at gameInstances[0]
         currentGame = gameInstances[gameID]; //
         //keep track of which client is connected to which game instance
         webSocketToGame[connectionID] = currentGame; //connectionID determines game
         currentGame.addPlayer(ws); //add the first user to our new game
         //console.log("New game instance"); //for dev
-    }
-    else {
+    } else {
         webSocketToGame[connectionID] = gameInstances[gameID];
         currentGame.addPlayer(ws);
         gameID++;
@@ -88,19 +87,17 @@ wss.on("connection", function (ws) {
         let opponent = gameInstance.getOpponentSocket(ws); //get opponent socket
         let message; //message that will be transmitted to client
         //console.log(event);
-        if(event === "MATE") {
+        if (event === "MATE") {
             message = messages.O_GAME_WON_BY;
             message.data = gameInstance.getColorOfOpponent(ws);
-            if(message.data === "white") {
+            if (message.data === "white") {
                 gamesWonByWhite++;
-            }
-            else {
+            } else {
                 gamesWonByBlack++;
             }
             opponent.send(JSON.stringify(message));
             ws.send(JSON.stringify(message));
-        }
-        else {
+        } else {
             message = messages.O_MOVE; //message is a move object
             message.data = event; //
             opponent.send(JSON.stringify(message)); //send move to opponent socket
@@ -108,21 +105,28 @@ wss.on("connection", function (ws) {
     })
     console.log(webSocketToGame[connectionID] !== undefined);
 
-    ws.onclose = function (event) {
-        playersInGame--;
-        let index = websockets.indexOf(ws);
-        let gameInstance = webSocketToGame[index];
-        gameInstance.clearPlayer(ws);
-        if(gameInstance.hasAnotherPlayer()) {
-            playedGames++;
-            let opponent = gameInstance.getRemainingSocket();
-            let message = messages.O_GAME_ABORTED;
-            opponent.send(JSON.stringify(message));
+    ws.on("close", function incoming(event) {
+            playersInGame--;
+            let index = websockets.indexOf(ws);
+            let gameInstance = webSocketToGame[index];
+            gameInstance.clearPlayer(ws);
+            if (gameInstance.hasAnotherPlayer()) {
+                playedGames++;
+                let opponent = gameInstance.getRemainingSocket();
+                let message = messages.O_GAME_ABORTED;
+                if (event === 4001) {
+                    if (gameInstance.getColor(opponent) === "white") {
+                        gamesWonByWhite++;
+                    } else {
+                        gamesWonByBlack++;
+                    }
+                }
+                opponent.send(JSON.stringify(message));
+            }
+            gameInstances[gameID] = undefined;
         }
-        gameInstances[gameID] = undefined;
-    }
+    );
 });
-
 //Redirect for the play button
 app.get('/play', function (req, res) {
     res.redirect('game');
