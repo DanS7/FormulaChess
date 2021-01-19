@@ -13,15 +13,17 @@ document.addEventListener('DOMContentLoaded', setup);
 
 let socket;
 let playerColor;
-let currentlyAttacked = [];
+let currentlyAttacked = [];         // A list of squares that are attacked by the opponent
 let inCheck;
-let currentMoves = [];
-let kingMoved = false;
-let leftRookMoved = false;      // a1, h8
-let rightRookMoved = false;     // a8, h1
-let castling = false;
+let currentMoves = [];              // A list that saves the spaces where the clicked piece can move
+let kingMoved = false;              // Needed for castling
+let leftRookMoved = false;          // a1, h8
+let rightRookMoved = false;         // a8, h1
+let castling = false;               // true if castling available
 
-//-----------Creating the chess board-------------//
+/*
+* Creates the board and appends it to the document
+* */
 function createBoard() {
     let container = document.getElementById("board");
     let waitMessage = container.childNodes[0];
@@ -40,7 +42,9 @@ function createBoard() {
         }
     }
 }
-
+/*
+* Creates each row of the board
+* */
 function createRow(rownum) {
     const row = document.createElement('div');
     row.id = 'row';
@@ -57,18 +61,23 @@ function createRow(rownum) {
     }
     return row;
 }
-
+/*
+* Creates the id of each cell on the board based on the row number and column number
+* */
 function position(rownum, colnum) {
     let x, y;
     x = 8 - rownum;
     y = String.fromCharCode(97 + colnum);
     return y.concat(x);
 }
-
+/*
+* Called at the beginning of the game to place the
+* pieces on the board in staring position
+* */
 function generatePieces() {
     let pos_white;
     let pos_black;
-//Spawning pawns | Black and White
+    //Spawning pawns | Black and White
     for(let i = 0; i < 8; i++) {
         const pawn_black = document.createElement('img');
         pawn_black.className = 'blackChessPiece';
@@ -156,17 +165,26 @@ function generatePieces() {
 
 }
 
-//------------------------------------------------//
+/*
+* A helper method that we use in order to call the
+* handleMove function with the needed parameters
+* */
 function helper() {
     handleMove(this, spawnCircle);
 }
 
+/*
+* Removes the potential moves from the board when a piece is pressed a second time.
+* */
 function removeCircle() {
     checkIfCircle();
     this.removeEventListener('click', removeCircle);
     this.addEventListener('click', helper);
 }
 
+/*
+* Returns the id of a new position on the grid offset by offsetX on the X axis and offsetY on the Y axis
+* */
 function createPosition(posX, posY, offsetX, offsetY) {
     let newX = posX;
     let newY = posY;
@@ -179,6 +197,9 @@ function createPosition(posX, posY, offsetX, offsetY) {
     return newX.concat(newY);
 }
 
+/*
+* Returns an object containing a circle used to show the potential moves for the clicked piece
+* */
 function makeCircle(parent) {
     let circle = document.createElement('img');
     circle.src = 'images/circle.png';
@@ -188,6 +209,9 @@ function makeCircle(parent) {
     return circle;
 }
 
+/*
+* Shows the player a circle at the spawnPos where spawnPos is a potential move for piece
+* */
 function spawnCircle(spawnPos, parentPos) {
     let parentColor = playerColor;
     let square = document.getElementById(spawnPos);
@@ -208,6 +232,9 @@ function spawnCircle(spawnPos, parentPos) {
     return false;
 }
 
+/*
+* Looks through the document and removes all circles(potential moves)
+* */
 function checkIfCircle() {
     while(document.getElementById('active-button')) {
         document.getElementById('active-button').id = '';
@@ -225,6 +252,9 @@ function checkIfCircle() {
     }
 }
 
+/*
+* Calls the appropriate method that handles the piece that was clicked
+* */
 function handleMove(obj, res, flag) {
     if(flag == null) {
         flag = false;
@@ -274,6 +304,9 @@ function handleMove(obj, res, flag) {
     }
 }
 
+/*
+* Displays pawn potential moves and attacks
+* */
 function showPawnMoves(color, posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     let offset = 1;
@@ -318,6 +351,9 @@ function showPawnMoves(color, posX, posY, res, flag) {
     }
 }
 
+/*
+* Displays knight potential moves
+* */
 function showKnightMoves(posX, posY, res, flag) {
     let movesX = [-1, 1];
     let movesY = [-2, 2];
@@ -347,6 +383,9 @@ function showKnightMoves(posX, posY, res, flag) {
     }
 }
 
+/*
+* Displays bishop potential moves
+* */
 function showBishopMoves(posX, posY, res, flag) {
     //-1 -1 | -1 1 | 1 -1 | 1 1
     let moves = [-1, 1];
@@ -383,6 +422,9 @@ function showBishopMoves(posX, posY, res, flag) {
     }
 }
 
+/*
+* Displays rook potential moves
+* */
 function showRookMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     if(!flag && (thisPos === 'a1' || thisPos === 'h8')) {
@@ -442,6 +484,9 @@ function showRookMoves(posX, posY, res, flag) {
     }
 }
 
+/*
+* Displays queen potential moves
+* */
 function showQueenMoves(posX, posY, res, flag) {
     checkIfCircle();
     showRookMoves(posX, posY, res, flag);
@@ -449,6 +494,9 @@ function showQueenMoves(posX, posY, res, flag) {
     showBishopMoves(posX, posY, res, flag);
 }
 
+/*
+* Displays king potential moves
+* */
 function showKingMoves(posX, posY, res, flag) {
     let thisPos = createPosition(posX, posY, 0, 0);
     let moves = [-1, 0, 1];
@@ -495,6 +543,9 @@ function showKingMoves(posX, posY, res, flag) {
     }
 }
 
+/*
+* Is called only when the king is selected and checks if castling is possible
+* */
 function checkCastling(posX, posY, offset) {
     let k = offset;
     let newPos = createPosition(posX, posY, k, 0);
@@ -519,6 +570,10 @@ function checkCastling(posX, posY, offset) {
     }
 }
 
+/*
+* Checks if the opponent king attacks the position
+* Only needed when moving the king near the opponent king
+* */
 function attackedByKing(pos) {
     let opponentColor;
     if(playerColor === 'white') {
@@ -542,6 +597,9 @@ function attackedByKing(pos) {
 
 }
 
+/*
+* Checks if newPos can be attacked by the piece at thisPos
+* */
 function checkLastPiece(newPos, thisPos, res, flag) {
     if(flag && document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes()) {
         let obj = document.getElementById(newPos).childNodes[0];
@@ -555,6 +613,9 @@ function checkLastPiece(newPos, thisPos, res, flag) {
     }
 }
 
+/*
+* Moves selected piece to the new coordinates and the rook in case of castling
+* */
 function makeMove() {
 
     let oldCoords = this.className.replace('Circle', '');
@@ -610,6 +671,11 @@ function makeMove() {
     //format: initialPosition + finalPosition
 }
 
+/*
+* Makes the opponents move on the players board
+* The move that the player makes is client side and then it is transmitted through the
+* server to the opponents side and this method makes the opponents move on the players side
+* */
 function makeOpponentMove(data) {
     let oldPos = data.substr(0, 2);
     let newPos = data.substr(2, 2);
@@ -647,6 +713,9 @@ function makeOpponentMove(data) {
     logMove(oldPos, newPos, opponentColor);
 }
 
+/*
+* Removes the taken piece from the board and moves the taker piece to the new position
+* */
 function takePiece() {
     let oldPos = this.className.substr(this.className.length - 2, 2);
     let newPos = this.parentElement.id;
@@ -660,6 +729,9 @@ function takePiece() {
     addDeadPiece(takenPiece.className);
 }
 
+/*
+* At the beginning of the players turn we make moves available to them
+* */
 function enableMoves() {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
@@ -670,6 +742,9 @@ function enableMoves() {
     //checkCondition();
 }
 
+/*
+* After the player makes a move we remove their ability to make another
+* */
 function disableMoves() {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
@@ -682,6 +757,9 @@ function disableMoves() {
     }
 }
 
+/*
+* Finds all the positions that are attacked by the opponent
+* */
 function findAttackedPositions() {
     currentlyAttacked.length = 0;
 
@@ -703,12 +781,18 @@ function findAttackedPositions() {
     }
 }
 
+/*
+* Adds a position to the list of currently attacked positions
+* */
 function isValidPosition(param1, param2) {
     //console.log(param1);
     currentlyAttacked[currentlyAttacked.length++] = param1;
     return true;
 }
 
+/*
+* Checks if the player is in chess
+* */
 function checkCondition() {
     findAttackedPositions();
     let king = document.getElementsByClassName(playerColor + 'ChessPieceKing')[0];
@@ -732,6 +816,9 @@ function checkCondition() {
     }
 }
 
+/*
+* Checks if the player can make any moves and if not then its Check Mate
+* */
 function checkMate() {
     let playerPieces = document.querySelectorAll('img');
     for(let i = 0; i < playerPieces.length; i++) {
@@ -751,6 +838,9 @@ function checkMate() {
     return true;
 }
 
+/*
+* Checks if a potential move is valid
+* */
 function testPosition(pos, parentPos) {
     if(document.getElementById(pos) == null) {
         return false;
@@ -782,6 +872,9 @@ function testPosition(pos, parentPos) {
     return valid;
 }
 
+/*
+* Returns true if the position is on the board and false otherwise
+* */
 function positionInGrid(pos) {
     let posX = pos.substr(0, 1);
     let posY = pos.substr(1, 1);
