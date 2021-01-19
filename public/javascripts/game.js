@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
         disconnectSocket();
         location.href = "/";
     })
+    window.addEventListener('unload', function () {
+        disconnectSocket();
+    })
 });
 document.addEventListener('DOMContentLoaded', setup);
 
@@ -624,9 +627,7 @@ function makeOpponentMove(data) {
     document.getElementById(newPos).appendChild(piece);
     enableMoves();
     if(deadPiece !== undefined) {
-        console.log("MADE IT!");
-        addDeadPiece(deadPiece.className
-        );
+        addDeadPiece(deadPiece.className);
     }
     inCheck = checkCondition();
     if(inCheck) {

@@ -135,7 +135,7 @@ wss.on("connection", function (ws) {
                     gameInstances[gameInstance.getId()] = undefined;
                 }
                 break;
-            case 3001: //opponent socket conceded
+            default: //opponent socket conceded
                 gameInstances[gameInstance.getId()] = undefined;
                 break;
         }
