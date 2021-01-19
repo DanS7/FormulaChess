@@ -4,7 +4,6 @@ let game = function (gameID) {
     this.white = null;
     this.black = null;
     this.id = gameID;
-    this.gameState = '0 JOINT';
     this.isWhite = false;
     this.isBlack = false;
 }
@@ -48,21 +47,6 @@ game.prototype.addPlayer = function (ws) {
     this.black = ws;
 }
 
-//Returns true if 2 users connected
-game.prototype.isReady = function () {
-    if(this.white !== null && this.black !== null) {
-        return true;
-    }
-    return false;
-}
-
-//Sends a message to both users
-//TODO: Make it such that the message is sent from one user to the other
-game.prototype.sendMessage = function (message) {
-    this.white.send(message);
-    this.black.send(message);
-}
-
 game.prototype.userColor = function () {
     this.white.send(messages.S_PLAYER_A);
     this.black.send(messages.S_PLAYER_B);
@@ -73,10 +57,6 @@ game.prototype.getRemainingSocket = function () {
         return this.black;
     }
     return this.white;
-}
-
-game.prototype.hasTwoPlayers = function () {
-    return this.black !== null && this.white !== null;
 }
 
 game.prototype.hasAnotherPlayer = function () {
