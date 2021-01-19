@@ -10,40 +10,48 @@
 <body>
 
 <!-- Add your site or application content here -->
-<div class="leftContainer">
-  <img src="images/logo_transparent.png" id="logoImg">
-  <div class="opponentCaptures">
+
+<div id="gameScreen">
+
+  <div class="leftContainer">
+    <img src="images/logo_transparent.png" id="logoImg">
+    <div class="opponentCaptures">
+    </div>
+    <div class="userCaptures">
+    </div>
   </div>
-  <div class="userCaptures">
-  </div>
-</div>
-<div class="centerContainer">
-  <!--<div class="timers">
-    <div class="leftTimer">Opponent's timer</div>
-    <div class="rightTimer">Your timer</div>
-  </div>-->
-  <!--Here comes the game board, one div for each board cell -->
-  <div id="board">
-    <div class="waitMessage">
-      <div class="message">Waiting for second player to connect</div>
-      <div class="anim">
-        <img src="images/White%20Pieces/Rook_White.png"/>
-        <img src="images/White%20Pieces/Rook_White.png"/>
-        <img src="images/White%20Pieces/Rook_White.png"/>
-        <img src="images/White%20Pieces/Rook_White.png"/>
-        <img src="images/White%20Pieces/Rook_White.png"/>
+
+  <div class="centerContainer">
+    <!--<div class="timers">
+      <div class="leftTimer">Opponent's timer</div>
+      <div class="rightTimer">Your timer</div>
+    </div>-->
+    <!--Here comes the game board, one div for each board cell -->
+    <div id="board">
+      <div class="waitMessage">
+        <div class="message">Waiting for second player to connect</div>
+        <div class="anim">
+          <img src="images/White%20Pieces/Rook_White.png"/>
+          <img src="images/White%20Pieces/Rook_White.png"/>
+          <img src="images/White%20Pieces/Rook_White.png"/>
+          <img src="images/White%20Pieces/Rook_White.png"/>
+          <img src="images/White%20Pieces/Rook_White.png"/>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div  class="rightContainer">
-  <div class="concedeContainer">
-    <button id="concedeButton">Concede</button>
+
+  <div  class="rightContainer">
+    <div class="concedeContainer">
+      <button id="concedeButton">Concede</button>
+    </div>
+    <div id="moveLog">
+      <p id="moveLogText">Move Log</p>
+    </div>
   </div>
-  <div id="moveLog">
-    <p id="moveLogText">Move Log</p>
-  </div>
+
 </div>
+
 </body>
 <script src="javascripts/game.js"></script>
 <script src="javascripts/client.js"></script>
