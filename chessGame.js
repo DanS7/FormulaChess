@@ -9,6 +9,10 @@ let game = function (gameID) {
     this.isBlack = false;
 }
 
+game.prototype.getId = function () {
+    return this.id;
+}
+
 //Set the user which will be black
 game.prototype.setBlack = function (ws) {
     this.black = ws;

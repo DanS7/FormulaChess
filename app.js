@@ -106,24 +106,40 @@ wss.on("connection", function (ws) {
     console.log(webSocketToGame[connectionID] !== undefined);
 
     ws.on("close", function incoming(event) {
-            playersInGame--;
-            let index = websockets.indexOf(ws);
-            let gameInstance = webSocketToGame[index];
-            gameInstance.clearPlayer(ws);
-            if (gameInstance.hasAnotherPlayer()) {
-                playedGames++;
-                let opponent = gameInstance.getRemainingSocket();
-                let message = messages.O_GAME_ABORTED;
-                if (event === 4001) {
-                    if (gameInstance.getColor(opponent) === "white") {
+        playersInGame--;
+        let index = websockets.indexOf(ws);
+        let gameInstance = webSocketToGame[index];
+        gameInstance.clearPlayer(ws);
+        let opponent;
+        let message;
+        switch(event) {
+            case 4001: //this ws has conceded
+                if(gameInstance.hasAnotherPlayer()) {
+                    playedGames++;
+                    opponent = gameInstance.getRemainingSocket();
+                    message = messages.O_OPPONENT_LEFT;
+                    if(gameInstance.getColor(opponent) === "white") {
                         gamesWonByWhite++;
-                    } else {
+                    }
+                    else {
                         gamesWonByBlack++;
                     }
+                    opponent.send(JSON.stringify(message));
                 }
-                opponent.send(JSON.stringify(message));
-            }
-            gameInstances[gameID] = undefined;
+                else {
+                    gameInstances[gameInstance.getId()] = undefined;
+                }
+                break;
+            case 4000: //gameFinished
+                if(!gameInstance.hasAnotherPlayer()) {
+                    gameInstances[gameInstance.getId()] = undefined;
+                }
+                break;
+            case 3001: //opponent socket conceded
+                gameInstances[gameInstance.getId()] = undefined;
+                break;
+        }
+
         }
     );
 });

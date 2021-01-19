@@ -833,10 +833,19 @@ function setup() {
                 makeOpponentMove(message.data);
                 //make this move, string is in message.data
                 break;
-            case "GAME-ABORTED":
-                //TODO: YOU WIN MESSAGE
-                window.location.replace("http://localhost:3000");
-                socket.close();
+            case "OPPONENT-LEFT":
+                let opScreen = document.createElement("div");
+                opScreen.setAttribute("id", "opaque");
+                document.getElementsByTagName("body")[0].appendChild(opScreen);
+                let opponentLeft = document.createElement("div");
+                let status = document.createElement("div");
+                status.setAttribute("id", "popUpStatus");
+                opponentLeft.setAttribute("id", "winPopUp");
+                status.textContent = "OPPONENT CONCEDED!"
+                opponentLeft.appendChild(status);
+                document.getElementsByTagName("body")[0].appendChild(opponentLeft);
+                delay();
+                socket.close(3001);
                 break;
             case "GAME-WON-BY":
                 let opaqueScreen = document.createElement("div");
@@ -855,14 +864,18 @@ function setup() {
                 }
                 popUp.appendChild(popUpStatus);
                 document.getElementsByTagName("body")[0].appendChild(popUp);
-                const delayInMilliSeconds = 5000;
-                setTimeout(function () {
-                    window.location.replace("http://localhost:3000");
-                    socket.close();
-                }, delayInMilliSeconds);
+                delay();
+                socket.close(4000);
                 break;
         }
     }
+}
+
+function delay() {
+    const delayInMilliSeconds = 5000;
+    setTimeout(function () {
+        window.location.replace("http://localhost:3000");
+    }, delayInMilliSeconds);
 }
 
 function restrict(disable) {

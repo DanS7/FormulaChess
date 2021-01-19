@@ -61,5 +61,12 @@
         type: exports.T_GAME_OVER,
         data: null
     };
+
+    //Server to client: opponent left the game, so you win!
+    exports.T_OPPONENT_LEFT = "OPPONENT-LEFT";
+    exports.O_OPPONENT_LEFT = {
+        type: exports.T_OPPONENT_LEFT,
+    }
+
 })(typeof exports === "undefined" ? (this.Messages = {}) : exports);
 //if exports is undefined, we are on the client; else the server
