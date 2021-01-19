@@ -54,6 +54,7 @@ body {
 }
 
 .rightContainer {
+  width: 100%;
 }
 
 .concedeContainer {
@@ -72,8 +73,7 @@ body {
   border-style: solid;
   font-family: "Poor Richard";
   font-size: large;
-  margin-top: 6%;
-  margin-left: 40%;
+  margin: auto;
 }
 
 #board {
@@ -149,10 +149,9 @@ img[class*='Circle'] {
 
 #moveLog {
   position: relative;
-  margin-top: 30%;
+  margin: 15% auto;
   height: 50%;
-  width: 50%;
-  margin-left: 40%;
+  width: 75%;
   border: 2px solid black;
   text-align: center;
   overflow-y: scroll;
@@ -162,14 +161,14 @@ img[class*='Circle'] {
 .oneMove {
   float: top;
   position: relative;
-  height: 5%;
+  height: 7%;
 }
 
 #moveLogText {
   font-family: fantasy;
   border-bottom: 3px solid black;
   overflow: hidden;
-  margin: 2px 0 0 0;
+  margin: auto;
   font-size: large;
 }
 
