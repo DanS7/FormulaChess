@@ -9,6 +9,10 @@ let game = function (gameID) {
     this.isBlack = false;
 }
 
+game.prototype.getId = function () {
+    return this.id;
+}
+
 //Set the user which will be black
 game.prototype.setBlack = function (ws) {
     this.black = ws;
@@ -100,6 +104,13 @@ game.prototype.getColorOfOpponent = function (ws) {
         return "black";
     }
     return "white";
+}
+
+game.prototype.getColor = function (ws) {
+    if(ws === this.white) {
+        return "white";
+    }
+    return "black";
 }
 
 module.exports = game;
