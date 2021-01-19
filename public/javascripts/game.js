@@ -1052,7 +1052,3 @@ function checkForPieceName(piece) {
         return "Queen";
     }
 }
-/*TODO list:
-* Waiting for player to connect + animation
-* Play button animation
-* */

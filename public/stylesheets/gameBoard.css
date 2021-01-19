@@ -112,8 +112,8 @@ body {
 }
 
 #board {
+  margin: 10vh 10vw;
   display: block;
-  margin: auto;
   border-style: solid;
   height: 75vmin;
   width: 75vmin;
@@ -223,8 +223,7 @@ img[class*='Circle'] {
   vertical-align: middle;
   position: relative;
   display: flex;
-  padding: 75px 100px 50px 20%;
-  margin: auto;
+  margin: 10vh 7vw;
 }
 
 .anim img {
