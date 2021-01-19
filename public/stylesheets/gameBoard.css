@@ -6,7 +6,7 @@
 
 body {
   position: fixed;
-  background: #b3d4fc;
+  background: #13275C;
   margin: 0;
   height: 100%;
   width: 100%;
@@ -117,7 +117,7 @@ body {
   border-style: solid;
   height: 75vmin;
   width: 75vmin;
-  background-color: #51CDED;
+  background-color: #646D87;
 }
 
 #row {
