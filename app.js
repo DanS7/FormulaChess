@@ -9,14 +9,6 @@ const ejs = require("ejs");
 
 const port = process.argv[2]; //The port
 
-app.get("/", (req, res) => {
-    res.render("splash.ejs", {
-        gamesPlayed: playedGames,
-        players: playersInGame,
-        gamesWonByWhite: gamesWonByWhite,
-        gamesWonByBlack: gamesWonByBlack
-    });
-});
 app.use(express.static(__dirname + "/public"));
 //Wipe .html extension from urls
 app.use(express.static('public', {
@@ -25,6 +17,33 @@ app.use(express.static('public', {
 
 app.set("view engine", "ejs");
 
+
+app.get('/game(.html)?', function (req, res) {
+    res.redirect('game');
+});
+
+//Redirect for the play button
+app.get('/play', function (req, res) {
+    res.redirect('game');
+});
+
+app.get("/", (req, res) => {
+    res.render("splash.ejs", {
+        gamesPlayed: playedGames,
+        players: playersInGame,
+        gamesWonByWhite: gamesWonByWhite,
+        gamesWonByBlack: gamesWonByBlack
+    });
+});
+
+app.get('/splash(.html)?(.ejs)?', (req, res) => {
+    res.render("splash.ejs", {
+        gamesPlayed: playedGames,
+        players: playersInGame,
+        gamesWonByWhite: gamesWonByWhite,
+        gamesWonByBlack: gamesWonByBlack
+    })
+})
 //Array of all the games
 const gameInstances = [];
 
@@ -135,7 +154,7 @@ wss.on("connection", function (ws) {
                     gameInstances[gameInstance.getId()] = undefined;
                 }
                 break;
-            default: //opponent socket conceded
+            default : //opponent socket conceded
                 gameInstances[gameInstance.getId()] = undefined;
                 break;
         }
@@ -143,14 +162,6 @@ wss.on("connection", function (ws) {
         }
     );
 });
-//Redirect for the play button
-app.get('/play', function (req, res) {
-    res.redirect('game');
-});
 
-//homePage is splash.html
-app.get('/', function(req, res) {
-    res.redirect("splash");
-});
 
 server.listen(port);

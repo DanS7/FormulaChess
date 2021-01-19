@@ -4,10 +4,6 @@ document.addEventListener('DOMContentLoaded', spawnRandomPieces);
 const whitePawn = 'images/White Pieces/Pawn_White.png';
 const container = document.getElementsByClassName('pieces')[0];
 
-function getRandom(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
-
 function spawnRandomPieces() {
     for(let i = 0; i < 10; i++) {
         for(let j = 0; j < 10; j++) {
