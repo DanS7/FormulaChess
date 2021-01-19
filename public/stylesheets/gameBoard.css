@@ -117,6 +117,7 @@ body {
   border-style: solid;
   height: 75vmin;
   width: 75vmin;
+  background-color: #51CDED;
 }
 
 #row {
@@ -209,6 +210,7 @@ img[class*='Circle'] {
 
 
 .message {
+  color: black;
   font-family: fantasy;
   font-size: 20px;
   text-align: center;

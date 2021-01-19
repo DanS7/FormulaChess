@@ -1,56 +1,93 @@
 * {
-    background-color: #b3d4fc;
+    background-color: #13275C;
     padding: 0;
-    border: 0;
     margin: 0;
 }
 
-#logoImg {
-    display: block;
-    margin: 0 auto;
-    padding-bottom: 50px;
-    width: 25%;
+.container {
+    margin: 0 5%;
+    display: grid;
+    grid-template-rows: repeat(3, 33.3%);
+    grid-template-columns: repeat(3, 33.3%);
 }
 
-table {
-    width: 100%;
-    padding: 20px;
-}
-
-td {
-    width: 33.3%;
-    //border: 2px dashed;
-}
-
-#gameStats, #gameDescription {
-    border: 2px solid black;
-    background-color: #153973;
-    color: white;
-    width: 50%;
-    height: 150px;
+.container img {
+    display: flex;
+    height: 50vmin;
+    max-height: 100%;
     margin: auto;
-    text-align: center;
 }
 
-#btnContainer {
-    text-align: center;
-    height: 100px;
+.container form {
+    height: 40%;
+    margin: auto;
 }
 
-#playBtn {
-    background-color: #3a4b6e;
-    margin: 0;
-    position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-    padding: 10px 20px;
-    color: white;
-    cursor: pointer;
-}
-
-.stat {
-    background-color: #153973;
+.description {
+    padding-top: 50px;
+    margin-right: 5%;
+    margin-left: 30%;
+    text-align: right;
+    color: #c4e2f1;
     font-family: fantasy;
-    font-size: large;
+
+}
+
+
+.gameStats {
+    margin: auto;
+    padding: 10px 75px;
+    text-align: center;
+    font-family: fantasy;
+    border: 3px solid #51CDED;
+    border-radius: 10px;
+    background-color: #646D87;
+    line-height: 1.6;
+}
+
+
+
+.button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #51CDED;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+.button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.button:hover span {
+    padding-right: 25px;
+}
+
+.button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+
+span {
+    background-color: #51CDED;
+    font-family: fantasy;
 }
