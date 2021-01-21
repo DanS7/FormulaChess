@@ -15,9 +15,10 @@ let windowHeight;
 let doc;
 
 function checkResolution() {
-    if((windowHeight < 768 || windowWidth < 1366) ||
+    if((windowHeight < 768 || windowWidth < 1366) /*||
         (parseFloat(windowWidth) / windowHeight < 1.5) ||
-        (parseFloat(windowWidth) / windowHeight > 2.1)) {
+        (parseFloat(windowWidth) / windowHeight > 2.1)*/
+        ) {
         alert("Your screen resolution is not yet supported!");
     }
 }

@@ -25,6 +25,9 @@ let castling = false;               // true if castling available
 * Creates the board and appends it to the document
 * */
 function createBoard() {
+    //Change concede button
+    document.getElementById('concedeButton').innerText = 'Concede';
+
     let container = document.getElementById("board");
     let waitMessage = container.childNodes[0];
     container.removeChild(waitMessage);
