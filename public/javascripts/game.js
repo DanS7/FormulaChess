@@ -279,10 +279,6 @@ function handleMove(obj, res, flag) {
     const posX = obj.parentElement.id.charAt(0);
     const posY = obj.parentElement.id.charAt(1);
 
-    if(!flag) {
-        //console.log(createPosition(posX, posY, 0, 0));
-    }
-
     const type = obj.className.replace('whiteChessPiece', '').replace('blackChessPiece', '').replace('Check', '');
     switch (type) {
         case('Pawn'):
@@ -347,7 +343,6 @@ function showPawnMoves(color, posX, posY, res, flag) {
         }
     }
     if(!flag) {
-        //console.log(currentMoves);
         for (let i = 0; i < currentMoves.length; i++) {
             spawnCircle(currentMoves[i], thisPos);
         }
@@ -399,10 +394,8 @@ function showBishopMoves(posX, posY, res, flag) {
             let newPos;
             do {
                 newPos = createPosition(posX, posY, k * moves[i], k * moves[j]);
-                //console.log("New pos: " + newPos);
                 if(!positionInGrid(newPos) ||
                     (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))){
-                    //console.log("broke at: " + newPos);
                     break;
                 }
                 else if(flag) {
@@ -442,10 +435,8 @@ function showRookMoves(posX, posY, res, flag) {
         let k = 1;
         do {
             newPos = createPosition(posX, posY, k * moves[i], 0);
-            //console.log("pos: " + newPos);
             if(!positionInGrid(newPos) ||
                 (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
-                //console.log("broke");
                 break;
             }
             else if(flag) {
@@ -462,10 +453,8 @@ function showRookMoves(posX, posY, res, flag) {
         k = 1;
         do {
             newPos = createPosition(posX, posY, 0, k * moves[i]);
-            //console.log("pos: " + newPos);
             if(!positionInGrid(newPos) ||
                 (document.getElementById(newPos).hasChildNodes() && document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
-                //console.log("broke");
                 break;
             }
             else if(flag) {
@@ -506,16 +495,13 @@ function showKingMoves(posX, posY, res, flag) {
     for(let i = 0; i < moves.length; i++) {
         for(let j = 0; j < moves.length; j++) {
             let newPos = createPosition(posX, posY, moves[i], moves[j]);
-            //console.log(newPos);
             if(positionInGrid(newPos)) {
                 if(!document.getElementById(newPos).hasChildNodes() ||
                     (document.getElementById(newPos).hasChildNodes() &&
                     !document.getElementById(newPos).childNodes[0].className.includes(playerColor))) {
                     if(!flag) {
-                        //console.log(newPos + " and attackedByKing: " + attackedByKing(newPos));
                     }
                     if(!flag && testPosition(newPos, thisPos) && !attackedByKing(newPos)) {
-                        //console.log("King can move at: " + newPos);
                         currentMoves[currentMoves.length++] = newPos;
                     }
                     if(flag) {
@@ -539,7 +525,6 @@ function showKingMoves(posX, posY, res, flag) {
     }
 
     if(!flag) {
-        //console.log(currentMoves);
         for (let i = 0; i < currentMoves.length; i++) {
             spawnCircle(currentMoves[i], thisPos);
         }
@@ -567,7 +552,6 @@ function checkCastling(posX, posY, offset) {
         findAttackedPositions();
         if(currentMoves.includes(rookPos) && !currentlyAttacked.includes(kingPos)) {
             currentMoves[currentMoves.length++] = kingPos;
-            //console.log("Castling available");
             castling = true;
         }
     }
@@ -586,7 +570,6 @@ function attackedByKing(pos) {
         opponentColor = 'white';
     }
     let king = document.getElementsByClassName(opponentColor + 'ChessPieceKing')[0];
-    //console.log(king);
     let kingPos = king.parentNode.id;
     let attacked = [];
     let moves = [-1, 0, 1];
@@ -595,7 +578,6 @@ function attackedByKing(pos) {
             attacked[attacked.length++] = createPosition(kingPos.substr(0, 1), kingPos.substr(1, 1), moves[i], moves[j]);
         }
     }
-    //console.log(attacked);
     return attacked.includes(pos);
 
 }
@@ -606,7 +588,6 @@ function attackedByKing(pos) {
 function checkLastPiece(newPos, thisPos, res, flag) {
     if(flag && document.getElementById(newPos) != null && document.getElementById(newPos).hasChildNodes()) {
         let obj = document.getElementById(newPos).childNodes[0];
-        //console.log(obj.className.substr(0, 5) + " - " + document.getElementById(thisPos).childNodes[0].className.substr(0, 5));
         if(obj.className.substr(0, 5) !== document.getElementById(thisPos).childNodes[0].className.substr(0, 5)) {
             res(newPos, thisPos);
         }
@@ -627,7 +608,6 @@ function makeMove() {
     //Remove object from old position
     let piece = document.getElementById(oldCoords).childNodes[0];
     if(piece.className.includes('King')) {
-        //console.log("King moved!");
         kingMoved = true;
     }
     document.getElementById(oldCoords).removeChild(piece);
@@ -637,7 +617,6 @@ function makeMove() {
     //Check if we castled and move rook if we did
     piece = document.getElementById(newCoords).childNodes[0];
     if(piece.className.includes('King') && castling === true) {
-        //console.log("Castling...");
         //We need to move the rook
         if(newCoords === 'c1') {
             let rook = document.getElementById('a1').childNodes[0];
@@ -685,7 +664,6 @@ function makeOpponentMove(data) {
     let deadPiece;
     let piece = document.getElementById(oldPos).childNodes[0];
     piece.parentElement.removeChild(piece);
-    //console.log(piece);
 
     if(document.getElementById(newPos).hasChildNodes()) {
         deadPiece = document.getElementById(newPos).childNodes[0];
@@ -702,7 +680,6 @@ function makeOpponentMove(data) {
     if(inCheck) {
         if(checkMate()) {
             socket.send("MATE");
-            console.log("MATE!");
         }
     }
     checkIfCircle();
@@ -774,10 +751,8 @@ function findAttackedPositions() {
         opponentColor = 'white';
     }
     let opponentPieces = document.querySelectorAll('img');
-    //console.log(opponentPieces);
     for(let i = 0; i < opponentPieces.length; i++) {
         if(opponentPieces[i].className.includes(opponentColor + 'ChessPiece')) {
-            //console.log(opponentPieces[i]);
             handleMove(opponentPieces[i], isValidPosition, true);
             checkIfCircle();
         }
@@ -788,7 +763,6 @@ function findAttackedPositions() {
 * Adds a position to the list of currently attacked positions
 * */
 function isValidPosition(param1, param2) {
-    //console.log(param1);
     currentlyAttacked[currentlyAttacked.length++] = param1;
     return true;
 }
@@ -801,17 +775,12 @@ function checkCondition() {
     let king = document.getElementsByClassName(playerColor + 'ChessPieceKing')[0];
     if(typeof king == 'undefined') {
         king = document.getElementsByClassName(playerColor + 'ChessPieceKingCheck')[0];
-        //console.log("undefined");
     }
-    //console.log(king);
-    //console.log(currentlyAttacked);
     let kingPos = king.parentNode.id;
     if(currentlyAttacked.includes(kingPos)) {
         if(!king.className.includes('Check')) {
             king.className += 'Check';
         }
-        //console.log(playerColor + " King is at position: " + king.parentNode.id);
-        //console.log("King is attacked by " + findNrOfAttackers(kingPos) + " pieces.");
         return true;
     }
     else {
@@ -831,9 +800,6 @@ function checkMate() {
             checkIfCircle();
             handleMove(playerPieces[i], isValidPosition(), false);
             if(currentMoves.length > 0) {
-                //console.log("Found move for piece: ");
-                //console.log(playerPieces[i]);
-                //console.log(currentMoves);
                 return false;
             }
         }
@@ -850,7 +816,6 @@ function testPosition(pos, parentPos) {
     }
     let parent = document.getElementById(parentPos).childNodes[0];
     //parent.className = document.getElementById(parentPos).childNodes[0].className;
-    //console.log(parent);
     parent.parentNode.removeChild(parent); //Removing the piece from its initial position
     //Simulating the take piece if the position attacks another piece
     let opponentPiece = null;
@@ -859,9 +824,7 @@ function testPosition(pos, parentPos) {
         document.getElementById(pos).removeChild(opponentPiece);
     }
     document.getElementById(pos).appendChild(parent); //Moving it to the testing position
-    //console.log(document.getElementById(pos));
     let valid = !checkCondition();
-    //console.log("Testing position: " + pos + " and valid is " + valid);
     document.getElementById(pos).removeChild(parent); //Removing piece from test position
     document.getElementById(parentPos).appendChild(parent); //Placing piece back in its original position
 

@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     windowWidth = doc.clientWidth;
     windowHeight = doc.clientHeight;
     checkResolution();
-    console.log(windowWidth + " " + windowHeight);
     window.addEventListener('resize', function () {
         windowWidth = doc.clientWidth;
         windowHeight = doc.clientHeight;
