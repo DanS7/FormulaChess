@@ -643,7 +643,8 @@ function makeMove() {
             moveWasMade('a8', 'd8');
         }
     }
-
+    let moveSound = document.getElementById('myAudio');
+    moveSound.play();
     disableMoves();
 
     moveWasMade(oldCoords, newCoords);
