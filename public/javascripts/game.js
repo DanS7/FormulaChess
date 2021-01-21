@@ -26,7 +26,7 @@ let castling = false;               // true if castling available
 * */
 function createBoard() {
     //Change concede button
-    document.getElementById('concedeButton').innerText = 'Concede';
+    document.getElementById('concedeButton').childNodes[0].innerText = 'Concede';
 
     let container = document.getElementById("board");
     let waitMessage = container.childNodes[0];

@@ -64,18 +64,6 @@ body {
   height: 15%;
 }
 
-#concedeButton {
-  text-align: center;
-  display: block;
-  height: 100%;
-  background: red;
-  width: 50%;
-  border-style: solid;
-  font-family: "Poor Richard";
-  font-size: large;
-  margin: auto;
-}
-
 #board {
   border-style: solid;
   height: 75vmin;
@@ -309,4 +297,52 @@ img[class*='Circle'] {
 .deadPiece {
   width: 25%;
   height: 25%;
+}
+
+
+
+#concedeButton {
+  display: block;
+  border-radius: 4px;
+  background-color: #51CDED;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  width: 240px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: auto;
+}
+
+#concedeButton span {
+  color: black;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+#concedeButton span::before {
+  content: '\00ab';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: -20px;
+  transition: 0.5s;
+}
+
+#concedeButton:hover span {
+  padding-left: 25px;
+}
+
+#concedeButton:hover span::before {
+  opacity: 1;
+  left: 0;
+}
+
+span {
+  background-color: #51CDED;
+  font-family: fantasy;
 }
