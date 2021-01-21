@@ -1,13 +1,14 @@
 //This is the game instance/object with multiple functions
 const messages = require("./public/javascripts/messages");
 let game = function (gameID) {
-    this.white = null;
-    this.black = null;
-    this.id = gameID;
-    this.isWhite = false;
-    this.isBlack = false;
+    this.white = null;              //Socket white
+    this.black = null;              //Socket Black
+    this.id = gameID;               //The game ID
+    this.isWhite = false;           //helper variable for addPlayer method
+    this.isBlack = false;           //helper variable for addPlayer method
 }
 
+//Return the id of the game
 game.prototype.getId = function () {
     return this.id;
 }
@@ -47,11 +48,13 @@ game.prototype.addPlayer = function (ws) {
     this.black = ws;
 }
 
+//Send the colors of the users to their sockets
 game.prototype.userColor = function () {
     this.white.send(messages.S_PLAYER_A);
     this.black.send(messages.S_PLAYER_B);
 }
 
+//Return the remaining socket if one of them is null
 game.prototype.getRemainingSocket = function () {
     if(this.white === null) {
         return this.black;
@@ -59,10 +62,12 @@ game.prototype.getRemainingSocket = function () {
     return this.white;
 }
 
+//Check if the game has a player
 game.prototype.hasAnotherPlayer = function () {
     return this.black !== null || this.white !== null;
 }
 
+//Delete one of the players
 game.prototype.clearPlayer = function (ws) {
     if(this.black === ws) {
         this.black = null;
@@ -72,6 +77,7 @@ game.prototype.clearPlayer = function (ws) {
     }
 }
 
+//Get the opponent's socket based on the given socket
 game.prototype.getOpponentSocket = function (ws) {
     if(ws === this.white) {
         return this.black;
@@ -79,6 +85,7 @@ game.prototype.getOpponentSocket = function (ws) {
     return this.white;
 }
 
+//Return the color of the opponent
 game.prototype.getColorOfOpponent = function (ws) {
     if(ws === this.white) {
         return "black";
@@ -86,6 +93,7 @@ game.prototype.getColorOfOpponent = function (ws) {
     return "white";
 }
 
+//Return the color of the given socket
 game.prototype.getColor = function (ws) {
     if(ws === this.white) {
         return "white";

@@ -10,7 +10,7 @@ const ejs = require("ejs");
 const port = process.argv[2]; //The port
 
 app.use(express.static(__dirname + "/public"));
-//Wipe .html extension from urls
+//Wipe .html and .ejs extension from urls
 app.use(express.static('public', {
     extensions: ['html', 'ejs'],
 }));
@@ -85,44 +85,40 @@ let gamesWonByWhite = 0;
 wss.on("connection", function (ws) {
     connectionID++;
     playersInGame++;
-    websockets[connectionID] = ws; //put new user socket in array
-    if (gameInstances[gameID] === undefined) { //if first user in game
-        gameInstances[gameID] = new Game(gameID); //create new game at gameInstances[0]
-        currentGame = gameInstances[gameID]; //
+    websockets[connectionID] = ws;                                  //put new user socket in array
+    if (gameInstances[gameID] === undefined) {                      //if first user in game
+        gameInstances[gameID] = new Game(gameID);                   //create new game at gameInstances[0]
+        currentGame = gameInstances[gameID];                        //Assign to currentGame
         //keep track of which client is connected to which game instance
-        webSocketToGame[connectionID] = currentGame; //connectionID determines game
-        currentGame.addPlayer(ws); //add the first user to our new game
-        //console.log("New game instance"); //for dev
-    } else {
-        webSocketToGame[connectionID] = gameInstances[gameID];
-        currentGame.addPlayer(ws);
-        gameID++;
-        //console.log("Second player added, start game!");
-        currentGame.userColor();
+        webSocketToGame[connectionID] = currentGame;                //connectionID determines game
+        currentGame.addPlayer(ws);                                  //add the first user to our new game
+    } else {                                                        //two users
+        webSocketToGame[connectionID] = gameInstances[gameID];      //connect websocket to game
+        currentGame.addPlayer(ws);                                  //add player
+        gameID++;                                                   //increment gameID so we can create a new game instance
+        currentGame.userColor();                                    //Send the colors to the users
     }
-    ws.on('message', function incoming(event) { //when a message comes from a user
-        let index = websockets.indexOf(ws); //identify our user id
-        let gameInstance = webSocketToGame[index]; //identify corresponding game instance
-        let opponent = gameInstance.getOpponentSocket(ws); //get opponent socket
-        let message; //message that will be transmitted to client
-        //console.log(event);
+    ws.on('message', function incoming(event) {                     //when a message comes from a user
+        let index = websockets.indexOf(ws);                         //identify our user id
+        let gameInstance = webSocketToGame[index];                  //identify corresponding game instance
+        let opponent = gameInstance.getOpponentSocket(ws);          //get opponent socket
+        let message;                                                //message that will be transmitted to client
         if (event === "MATE") {
             message = messages.O_GAME_WON_BY;
             message.data = gameInstance.getColorOfOpponent(ws);
-            if (message.data === "white") {
+            if (message.data === "white") {                         //Update stats
                 gamesWonByWhite++;
             } else {
                 gamesWonByBlack++;
             }
-            opponent.send(JSON.stringify(message));
+            opponent.send(JSON.stringify(message));                 //Send results to the sockets
             ws.send(JSON.stringify(message));
-        } else {
-            message = messages.O_MOVE; //message is a move object
-            message.data = event; //
-            opponent.send(JSON.stringify(message)); //send move to opponent socket
+        } else {                                                    //If not "MATE", then it must be a move
+            message = messages.O_MOVE;                              //message is a move object
+            message.data = event;
+            opponent.send(JSON.stringify(message));                 //send move to opponent socket
         }
     })
-    console.log(webSocketToGame[connectionID] !== undefined);
 
     ws.on("close", function incoming(event) {
         playersInGame--;
@@ -132,8 +128,8 @@ wss.on("connection", function (ws) {
         let opponent;
         let message;
         switch(event) {
-            case 4001: //this ws has conceded
-                if(gameInstance.hasAnotherPlayer()) {
+            case 4001:                                              //this ws has conceded
+                if(gameInstance.hasAnotherPlayer()) {               //If the game instance has another player, it is considered as a win/lose situation
                     playedGames++;
                     opponent = gameInstance.getRemainingSocket();
                     message = messages.O_OPPONENT_LEFT;
@@ -145,16 +141,16 @@ wss.on("connection", function (ws) {
                     }
                     opponent.send(JSON.stringify(message));
                 }
-                else {
+                else {                                              //Just clear the remaining player, stats were already updated
                     gameInstances[gameInstance.getId()] = undefined;
                 }
                 break;
-            case 4000: //gameFinished
+            case 4000:                                              //gameFinished
                 if(!gameInstance.hasAnotherPlayer()) {
                     gameInstances[gameInstance.getId()] = undefined;
                 }
                 break;
-            default : //opponent socket conceded
+            default :                                            
                 gameInstances[gameInstance.getId()] = undefined;
                 break;
         }

@@ -162,14 +162,15 @@ img[class*='Circle'] {
   float: top;
   position: relative;
   height: 7%;
+  font-size: 2vmin;
 }
 
 #moveLogText {
   font-family: fantasy;
-  border-bottom: 3px solid black;
+  border-bottom: 0.5vmin solid black;
   overflow: hidden;
   margin: auto;
-  font-size: large;
+  font-size: 3vmin;
 }
 
 

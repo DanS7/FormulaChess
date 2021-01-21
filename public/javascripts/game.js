@@ -888,16 +888,8 @@ function positionInGrid(pos) {
 }
 
 //Sets up the websocket when a user enters game.html
-//TODO:
-//Make the port responsive
 function setup() {
     socket = new WebSocket('ws://localhost:3000');
-    socket.onopen = function () {
-        console.log("check"); //helps the dev to see if it works
-    };
-    socket.onclose = function () {
-        socket.send("bye bye"); //helps the dev
-    };
     socket.onmessage = function (event) {
         let message = JSON.parse(event.data);
         switch (message.type) {
@@ -923,11 +915,10 @@ function setup() {
                 }
                 break;
             case "SET-MOVE":
-                //console.log(message.data);
                 makeOpponentMove(message.data);
                 //make this move, string is in message.data
                 break;
-            case "OPPONENT-LEFT":
+            case "OPPONENT-LEFT": //Opponent left, so you win
                 let opScreen = document.createElement("div");
                 opScreen.setAttribute("id", "opaque");
                 document.getElementsByTagName("body")[0].appendChild(opScreen);
@@ -941,7 +932,7 @@ function setup() {
                 delay();
                 socket.close(3001);
                 break;
-            case "GAME-WON-BY":
+            case "GAME-WON-BY": //The game was actually finished
                 let opaqueScreen = document.createElement("div");
                 opaqueScreen.setAttribute("id", "opaque");
                 document.getElementsByTagName("body")[0].appendChild(opaqueScreen);
@@ -965,6 +956,7 @@ function setup() {
     }
 }
 
+//Redirect user to the splash screen after 5 seconds
 function delay() {
     const delayInMilliSeconds = 5000;
     setTimeout(function () {
@@ -972,6 +964,7 @@ function delay() {
     }, delayInMilliSeconds);
 }
 
+//Restrict user to move any pieces
 function restrict(disable) {
     let img = document.querySelectorAll('img');
     for(let i = 0; i < img.length; i++) {
@@ -981,17 +974,18 @@ function restrict(disable) {
     }
 }
 
+//Log the move and send it to the server
 function moveWasMade(oldC, newC) {
     logMove(oldC, newC, playerColor);
     socket.send(oldC + newC);
-    //Here block the player from making other moves
-    //Until opponent moves
 }
 
+//Close the current socket
 function disconnectSocket() {
     socket.close(4001); //4001 is the code for a game aborted state
 }
 
+//Add a move to the move log
 function logMove(oldC, newC, playerColor) {
     let log = document.getElementById("moveLog");
     const newDiv = document.createElement("div");
@@ -1008,7 +1002,7 @@ function logMove(oldC, newC, playerColor) {
     log.appendChild(newDiv);
 }
 
-
+//Add a dead piece to the captures log
 function addDeadPiece(deadPiece) {
     let color;
     const pieceName = checkForPieceName(deadPiece);
@@ -1034,6 +1028,7 @@ function addDeadPiece(deadPiece) {
     }
 }
 
+//Check a piece's class name and return it's actual name
 function checkForPieceName(piece) {
 
     if(piece.includes("Pawn")) {
