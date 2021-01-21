@@ -25,7 +25,7 @@ let castling = false;               // true if castling available
 * Creates the board and appends it to the document
 * */
 function createBoard() {
-    //Change concede button
+    //Change 'Cancel search' to 'concede' button
     document.getElementById('concedeButton').childNodes[0].innerText = 'Concede';
 
     let container = document.getElementById("board");
