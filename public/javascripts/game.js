@@ -643,8 +643,7 @@ function makeMove() {
             moveWasMade('a8', 'd8');
         }
     }
-    let moveSound = document.getElementById('myAudio');
-    moveSound.play();
+
     disableMoves();
 
     moveWasMade(oldCoords, newCoords);
@@ -943,6 +942,9 @@ function restrict(disable) {
 
 //Log the move and send it to the server
 function moveWasMade(oldC, newC) {
+    let moveSound = new Audio();
+    moveSound.src = 'audio/moveSound.mp3';
+    moveSound.play();
     logMove(oldC, newC, playerColor);
     socket.send(oldC + newC);
 }
