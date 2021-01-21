@@ -111,14 +111,18 @@ div[class*="Red"] {
 }
 
 img[class^="whiteChessPiece"], img[class^="blackChessPiece"], img[class*="Check"] {
-  padding-top: 5%;
+  /*padding-top: 5%;*/
   height: 100%;
   width: 100%;
   cursor: pointer;
 }
 
 img[class*="Check"] {
-  background-color: rgba(255, 0, 0, 0.5);
+  /*padding-top: 5%;*/
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  background-color:rgba(255, 70, 70, 0.5);
 }
 
 /*
@@ -131,7 +135,7 @@ img[class^="whiteChessPiece"], img[class^="blackChessPiece"]:active {
 }
 */
 #active-button {
-  padding-top: 5%;
+  /*padding-top: 5%;*/
   height: 100%;
   width: 100%;
   cursor: pointer;
@@ -189,7 +193,7 @@ img[class*='Circle'] {
   vertical-align: middle;
   position: relative;
   display: flex;
-  margin: 10vh 7vw;
+  margin: 10vh 10vw;
 }
 
 .anim img {
